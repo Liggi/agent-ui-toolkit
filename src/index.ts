@@ -1,0 +1,71 @@
+// ── Context ──
+export { ToolkitProvider, useToolkitTheme, useAgentColor } from './context.js';
+export type { ToolkitConfig } from './context.js';
+
+// ── Types ──
+export type {
+  ToolResult,
+  ChatMessage,
+  DisplayContentBlock,
+  QuestionDefinition,
+  QuestionOption,
+  CustomToolRenderer,
+  BackgroundTaskOutput,
+} from './types.js';
+
+// ── Tokens ──
+export { tk, PROSE_CLASSES, PROSE_CLASSES_SM } from './tokens.js';
+
+// ── Utilities ──
+export { cn } from './utils/cn.js';
+export { detectLanguageFromPath } from './utils/language-detection.js';
+export {
+  formatFilePath,
+  countLines,
+  extractFileCount,
+  parseTodos,
+  extractDomain,
+} from './utils/tool-utils.js';
+
+// ── Main entry points ──
+export { ToolUseRenderer } from './components/ToolUseRenderer.js';
+export type { ToolUseRendererProps } from './components/ToolUseRenderer.js';
+export { ToolContent } from './components/ToolContent.js';
+export type { ToolContentProps } from './components/ToolContent.js';
+
+// ── Card infrastructure (for building custom tool cards) ──
+export { CollapsibleToolCard } from './components/CollapsibleToolCard.js';
+export { CollapsedToolGroup } from './components/CollapsedToolGroup.js';
+export type { CollapsedGroupData, ToolCallData, TemporalState } from './components/CollapsedToolGroup.js';
+
+// ── Shared renderers (for building custom tool cards) ──
+export { LazyCodeHighlight } from './components/shared/LazyCodeHighlight.js';
+export { CodeHighlight } from './components/shared/CodeHighlight.js';
+export { DiffViewer } from './components/shared/DiffViewer.js';
+export {
+  SearchResultContent,
+  FetchResultContent,
+  ProseResultContent,
+} from './components/shared/WebResultContent.js';
+export { ErrorBoundary } from './components/shared/ErrorBoundary.js';
+
+// ── Individual tool components (for selective import or wrapping) ──
+export { ReadTool } from './components/tools/ReadTool.js';
+export { EditTool } from './components/tools/EditTool.js';
+export { WriteTool } from './components/tools/WriteTool.js';
+export { BashTool, summarizeCommand, parseBackgroundOutputPath } from './components/tools/BashTool.js';
+export { SearchTool } from './components/tools/SearchTool.js';
+export { WebTool } from './components/tools/WebTool.js';
+export { TaskTool } from './components/tools/TaskTool.js';
+export { TaskOutputTool } from './components/tools/TaskOutputTool.js';
+export { TaskManagementTool } from './components/tools/TaskManagementTool.js';
+export { TodoTool } from './components/tools/TodoTool.js';
+export { PlanTool } from './components/tools/PlanTool.js';
+export { AskUserQuestionTool } from './components/tools/AskUserQuestionTool.js';
+export { FallbackTool } from './components/tools/FallbackTool.js';
+export { McpTool } from './components/tools/McpTool.js';
+export { ToolSearchTool } from './components/tools/ToolSearchTool.js';
+export { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './components/tools/TeamTools.js';
+
+// ── UI primitives (for building custom tool cards) ──
+export { Collapsible, CollapsibleTrigger, CollapsibleContent } from './components/ui/collapsible.js';

@@ -1,0 +1,95 @@
+import React, { useState, useCallback } from 'react';
+import { ClipboardCheck, Check, X } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
+import { PROSE_CLASSES } from '../../tokens.js';
+import { tk } from '../../tokens.js';
+
+interface PlanToolProps {
+  input: { plan?: string };
+  result: string;
+  isPendingApproval?: boolean;
+  /** Whether a subsequent user message means this plan has already been acted on. Consumer tracks this. */
+  isActedOn?: boolean;
+  onApprove?: () => void | Promise<void>;
+  onReject?: () => void | Promise<void>;
+}
+
+export function PlanTool({ input, result, isPendingApproval, isActedOn = false, onApprove, onReject }: PlanToolProps): React.JSX.Element {
+  const [isExpanded, setIsExpanded] = useState(!!isPendingApproval && !isActedOn);
+  const [approvalState, setApprovalState] = useState<'pending' | 'approved' | 'rejected'>('pending');
+
+  const planContent = input.plan || result || 'No plan provided';
+
+  const handleApprove = useCallback(async () => {
+    setApprovalState('approved');
+    await onApprove?.();
+  }, [onApprove]);
+
+  const handleReject = useCallback(async () => {
+    setApprovalState('rejected');
+    await onReject?.();
+  }, [onReject]);
+
+  const showApprovalButtons = isPendingApproval && approvalState === 'pending' && !isActedOn;
+  const statusLabel = approvalState === 'approved' || isActedOn
+    ? 'Implementation plan'
+    : approvalState === 'rejected'
+      ? 'Plan rejected'
+      : isPendingApproval
+        ? 'Awaiting approval'
+        : 'Implementation plan';
+
+  const tableClasses = `
+    [&_table]:w-full [&_table]:text-[11px]
+    [&_thead]:bg-stone-100 dark:[&_thead]:bg-zinc-800/20 [&_thead]:border-b ${tk.separator}
+    [&_tbody]:divide-y [&_tbody]:divide-stone-200 dark:[&_tbody]:divide-zinc-800/40
+    [&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_th]:text-[10px] [&_th]:text-stone-400 dark:[&_th]:text-zinc-500
+    [&_td]:px-3 [&_td]:py-1.5 [&_td]:text-stone-500 dark:[&_td]:text-zinc-400`;
+
+  return (
+    <CollapsibleToolCard
+      isExpanded={isExpanded}
+      onExpandedChange={setIsExpanded}
+      wrapperClassName="w-full"
+      cardClassName="border-rose-500/20 bg-rose-500/5"
+      headerContent={(
+        <>
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={14} className="text-rose-400/80 flex-shrink-0" />
+            <span className={`text-xs ${tk.text.muted}`}>Plan</span>
+          </div>
+          <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{statusLabel}</span>
+        </>
+      )}
+      content={(
+        <>
+          <div className={`border-t ${tk.separator} px-3 py-2.5 max-h-96 overflow-y-auto ${tk.scrollbar} ${PROSE_CLASSES} ${tableClasses}`}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{planContent}</ReactMarkdown>
+          </div>
+
+          {showApprovalButtons && (
+            <div className="border-t border-rose-500/20 bg-rose-500/5 px-3 py-2.5 flex items-center gap-3">
+              <span className={`text-[11px] ${tk.text.secondary} flex-1`}>Ready to implement?</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); void handleReject(); }}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] border transition-colors
+                  ${tk.text.secondary} border-stone-300 dark:border-zinc-700/50
+                  hover:border-red-500/30 hover:text-red-400`}
+              >
+                <X size={11} /> Reject
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); void handleApprove(); }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] text-rose-400 border border-rose-500/30 hover:bg-rose-500/10 transition-colors"
+              >
+                <Check size={11} /> Approve
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    />
+  );
+}
