@@ -18,7 +18,6 @@ export interface DisplayContentBlock {
   id?: string;
   name?: string;
   input?: Record<string, unknown>;
-  [key: string]: unknown;
 }
 
 export interface ChatMessage {

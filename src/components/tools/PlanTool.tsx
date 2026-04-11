@@ -6,19 +6,24 @@ import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { PROSE_CLASSES } from '../../tokens.js';
 import { tk, accent } from '../../tokens.js';
 
+type PlanOutcome = 'approved' | 'rejected';
+
 interface PlanToolProps {
   input: { plan?: string };
   result: string;
   isPendingApproval?: boolean;
-  /** Whether a subsequent user message means this plan has already been acted on. Consumer tracks this. */
-  isActedOn?: boolean;
+  /** Historical outcome of this plan — set by the consumer on reload when the
+   *  plan has already been acted on. `false` = not yet acted on. */
+  priorOutcome?: PlanOutcome | false;
   onApprove?: () => void | Promise<void>;
   onReject?: () => void | Promise<void>;
 }
 
-export function PlanTool({ input, result, isPendingApproval, isActedOn = false, onApprove, onReject }: PlanToolProps): React.JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(!!isPendingApproval && !isActedOn);
-  const [approvalState, setApprovalState] = useState<'pending' | 'approved' | 'rejected'>('pending');
+export function PlanTool({ input, result, isPendingApproval, priorOutcome = false, onApprove, onReject }: PlanToolProps): React.JSX.Element {
+  const [isExpanded, setIsExpanded] = useState(!!isPendingApproval && !priorOutcome);
+  const [approvalState, setApprovalState] = useState<'pending' | 'approved' | 'rejected'>(
+    priorOutcome ? priorOutcome : 'pending'
+  );
 
   const planContent = input.plan || result || 'No plan provided';
 
@@ -32,8 +37,8 @@ export function PlanTool({ input, result, isPendingApproval, isActedOn = false, 
     await onReject?.();
   }, [onReject]);
 
-  const showApprovalButtons = isPendingApproval && approvalState === 'pending' && !isActedOn;
-  const statusLabel = approvalState === 'approved' || isActedOn
+  const showApprovalButtons = isPendingApproval && approvalState === 'pending';
+  const statusLabel = approvalState === 'approved'
     ? 'Implementation plan'
     : approvalState === 'rejected'
       ? 'Plan rejected'

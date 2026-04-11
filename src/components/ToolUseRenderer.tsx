@@ -25,7 +25,8 @@ export interface ToolUseRendererProps {
   /** Callbacks for PlanTool approval. */
   onPlanApprove?: () => void | Promise<void>;
   onPlanReject?: () => void | Promise<void>;
-  isPlanActedOn?: boolean;
+  /** Historical plan outcomes keyed by tool_use_id. */
+  planOutcomes?: Record<string, 'approved' | 'rejected'>;
   /** Optional fetcher for BashTool background output. */
   fetchBackgroundOutput?: (path: string) => Promise<BackgroundTaskOutput | null>;
 }
@@ -46,7 +47,7 @@ export function ToolUseRenderer({
   customRenderers,
   onPlanApprove,
   onPlanReject,
-  isPlanActedOn,
+  planOutcomes,
   fetchBackgroundOutput,
 }: ToolUseRendererProps): React.JSX.Element | null {
   // select: ToolSearch queries are internal schema pre-loading — hide entirely
@@ -72,7 +73,7 @@ export function ToolUseRenderer({
           customRenderers={customRenderers}
           onPlanApprove={onPlanApprove}
           onPlanReject={onPlanReject}
-          isPlanActedOn={isPlanActedOn}
+          planOutcomes={planOutcomes}
           fetchBackgroundOutput={fetchBackgroundOutput}
         />
       </div>

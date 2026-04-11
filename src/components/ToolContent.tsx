@@ -138,8 +138,8 @@ export interface ToolContentProps {
   /** Callbacks for PlanTool approval UI. */
   onPlanApprove?: () => void | Promise<void>;
   onPlanReject?: () => void | Promise<void>;
-  /** Whether a plan has already been acted on (e.g., subsequent user message exists). */
-  isPlanActedOn?: boolean;
+  /** Lookup for historical plan outcome by tool_use_id. */
+  planOutcomes?: Record<string, 'approved' | 'rejected'>;
   /** Optional fetcher for BashTool background output. */
   fetchBackgroundOutput?: (path: string) => Promise<BackgroundTaskOutput | null>;
 }
@@ -147,7 +147,7 @@ export interface ToolContentProps {
 export function ToolContent({
   toolName, toolInput, toolResult, workingDirectory, toolUseId,
   childrenMessages, toolResults, questionId, onAnswerQuestion, isStreaming,
-  renderChildMessage, customRenderers, onPlanApprove, onPlanReject, isPlanActedOn,
+  renderChildMessage, customRenderers, onPlanApprove, onPlanReject, planOutcomes,
   fetchBackgroundOutput,
 }: ToolContentProps): React.JSX.Element | null {
   const [isErrorExpanded, setIsErrorExpanded] = useState(false);
@@ -234,7 +234,7 @@ export function ToolContent({
   }
 
   if (isError && (toolName === 'ExitPlanMode' || toolName === 'exit_plan_mode' || resultContent?.toLowerCase().includes('exit plan mode'))) {
-    return <PlanTool input={toolInput} result={resultContent} isPendingApproval isActedOn={isPlanActedOn} onApprove={onPlanApprove} onReject={onPlanReject} />;
+    return <PlanTool input={toolInput} result={resultContent} isPendingApproval priorOutcome={toolUseId && planOutcomes?.[toolUseId] || false} onApprove={onPlanApprove} onReject={onPlanReject} />;
   }
 
   if (isError) {
