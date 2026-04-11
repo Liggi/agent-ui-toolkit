@@ -122,7 +122,7 @@ export function CollapsedToolGroup({ group, temporalState }: CollapsedToolGroupP
   };
 
   return (
-    <div className={cn('w-fit max-w-full rounded-lg border transition-all duration-200', 'border-zinc-500/25 bg-zinc-500/5')}>
+    <div className={cn('w-fit max-w-full rounded-lg border transition-all duration-200', 'border-stone-300/40 bg-stone-500/5 dark:border-zinc-500/25 dark:bg-zinc-500/5')}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center gap-2 px-3 py-2 text-left cursor-pointer group"
