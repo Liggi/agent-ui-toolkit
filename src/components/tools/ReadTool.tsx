@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { FileText } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { countLines, formatFilePath } from '../../utils/tool-utils.js';
 import { detectLanguageFromPath } from '../../utils/language-detection.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk, accent } from '../../tokens.js';
+import { tk, accent, PROSE_CLASSES } from '../../tokens.js';
 
 interface ReadToolProps {
   input: { file_path?: string; offset?: number; limit?: number };
@@ -49,7 +51,13 @@ export function ReadTool({ input, result, workingDirectory }: ReadToolProps): Re
       )}
       content={cleanedContent ? (
         <div className={`border-t ${tk.separator}`}>
-          <LazyCodeHighlight code={cleanedContent} language={language} showLineNumbers className="rounded-none" />
+          {language === 'markdown' ? (
+            <div className={`px-3 py-2.5 max-h-96 overflow-y-auto ${tk.scrollbar} ${PROSE_CLASSES}`}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanedContent}</ReactMarkdown>
+            </div>
+          ) : (
+            <LazyCodeHighlight code={cleanedContent} language={language} showLineNumbers className="rounded-none" />
+          )}
         </div>
       ) : undefined}
     />

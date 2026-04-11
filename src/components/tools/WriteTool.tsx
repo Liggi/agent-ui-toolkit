@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { FilePlus } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { detectLanguageFromPath } from '../../utils/language-detection.js';
 import { formatFilePath, countLines } from '../../utils/tool-utils.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk, accent } from '../../tokens.js';
+import { tk, accent, PROSE_CLASSES } from '../../tokens.js';
 
 interface WriteToolProps {
   input: { file_path?: string; content?: string };
@@ -38,7 +40,13 @@ export function WriteTool({ input, workingDirectory }: WriteToolProps): React.JS
       )}
       content={content ? (
         <div className={`border-t ${tk.separator}`}>
-          <LazyCodeHighlight code={content} language={language} showLineNumbers className="rounded-none" />
+          {language === 'markdown' ? (
+            <div className={`px-3 py-2.5 max-h-96 overflow-y-auto ${tk.scrollbar} ${PROSE_CLASSES}`}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+            </div>
+          ) : (
+            <LazyCodeHighlight code={content} language={language} showLineNumbers className="rounded-none" />
+          )}
         </div>
       ) : undefined}
     />
