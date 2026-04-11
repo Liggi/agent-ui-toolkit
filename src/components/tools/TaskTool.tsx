@@ -1,20 +1,47 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Bot, Loader2, Compass, LayoutDashboard, Eye, Cpu, Wrench, type LucideIcon } from 'lucide-react';
 import type { ChatMessage, ToolResult } from '../../types.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { useAgentColor } from '../../context.js';
 import { cn } from '../../utils/cn.js';
-import { tk } from '../../tokens.js';
+import { tk, TINTS, DEFAULT_TINT } from '../../tokens.js';
 
-const TINTS: Record<string, { border: string; bg: string; icon: string }> = {
-  blue:   { border: 'border-blue-500/20',   bg: 'bg-blue-500/5',   icon: 'text-blue-400/80' },
-  green:  { border: 'border-green-500/20',  bg: 'bg-green-500/5',  icon: 'text-green-400/80' },
-  yellow: { border: 'border-amber-500/20',  bg: 'bg-amber-500/5',  icon: 'text-amber-400/80' },
-  purple: { border: 'border-purple-500/20', bg: 'bg-purple-500/5', icon: 'text-purple-400/80' },
-  red:    { border: 'border-red-500/20',    bg: 'bg-red-500/5',    icon: 'text-red-400/80' },
-  cyan:   { border: 'border-cyan-500/20',   bg: 'bg-cyan-500/5',   icon: 'text-cyan-400/80' },
+/** Visual identity for a subagent type — icon, tint, and display label. */
+interface SubagentVisual {
+  icon: LucideIcon;
+  tint: typeof DEFAULT_TINT;
+  label: string;
+}
+
+/** Maps known Claude Code subagent types to distinct visual identities. */
+const SUBAGENT_VISUALS: Record<string, SubagentVisual> = {
+  'Explore': {
+    icon: Compass,
+    tint: TINTS.blue,
+    label: 'Explorer',
+  },
+  'Plan': {
+    icon: LayoutDashboard,
+    tint: TINTS.yellow,
+    label: 'Architect',
+  },
+  'code-reviewer': {
+    icon: Eye,
+    tint: TINTS.purple,
+    label: 'Reviewer',
+  },
+  'statusline-setup': {
+    icon: Wrench,
+    tint: TINTS.green,
+    label: 'Config',
+  },
 };
-const DEFAULT_TINT = TINTS.purple;
+
+const DEFAULT_VISUAL: SubagentVisual = {
+  icon: Cpu,
+  tint: TINTS.purple,
+  label: 'Agent',
+};
 
 interface TaskToolProps {
   input: { prompt?: string; description?: string; subagent_type?: string; team_name?: string; name?: string };
@@ -41,8 +68,13 @@ export function TaskTool({
   const isTeamTask = !!input?.team_name;
   const agentName = input?.name;
 
+  // Resolve visual identity: team color overrides subagent type tint
   const teamColor = useAgentColor(input?.name);
-  const tint = (teamColor && TINTS[teamColor]) || DEFAULT_TINT;
+  const subagentVisual = SUBAGENT_VISUALS[agentType] || DEFAULT_VISUAL;
+  const tint = (teamColor && TINTS[teamColor]) || subagentVisual.tint;
+  const AgentIcon = isTeamTask ? Bot : subagentVisual.icon;
+  const displayLabel = isTeamTask ? (agentName || 'Agent') : subagentVisual.label;
+
   const isRunning = isStreaming !== false && (isPending || (!result && !hasChildren));
 
   const resultLines = result ? result.split('\n').filter(l => l.trim()).length : 0;
@@ -52,14 +84,26 @@ export function TaskTool({
     if (hasChildren && !isExpanded) setIsExpanded(true);
   }, [hasChildren]);
 
+  // Auto-scroll children area when new messages arrive, but only if the user
+  // hasn't scrolled up to read earlier content.
   const childrenRef = useRef<HTMLDivElement>(null);
+  const userScrolledUpRef = useRef(false);
+
+  const handleChildrenScroll = useCallback(() => {
+    const el = childrenRef.current;
+    if (!el) return;
+    // "Near bottom" = within 60px of the scroll floor
+    userScrolledUpRef.current = el.scrollHeight - el.scrollTop - el.clientHeight > 60;
+  }, []);
+
   useEffect(() => {
-    if (childrenRef.current && children.length > 0) {
-      childrenRef.current.scrollTo({ top: childrenRef.current.scrollHeight, behavior: 'smooth' });
+    if (childrenRef.current && children.length > 0 && !userScrolledUpRef.current) {
+      childrenRef.current.scrollTo({
+        top: childrenRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }, [children.length]);
-
-  const label = isTeamTask ? (agentName || 'Agent') : 'Task';
 
   return (
     <CollapsibleToolCard
@@ -73,9 +117,9 @@ export function TaskTool({
             {isRunning ? (
               <Loader2 size={14} className={cn(tint.icon, 'animate-spin flex-shrink-0')} />
             ) : (
-              <Bot size={14} className={cn(tint.icon, 'flex-shrink-0')} />
+              <AgentIcon size={14} className={cn(tint.icon, 'flex-shrink-0')} />
             )}
-            <span className={`text-xs ${tk.text.muted}`}>{label}</span>
+            <span className={`text-xs font-medium ${tk.text.muted}`}>{displayLabel}</span>
             {isTeamTask && teamColor && (
               <span className={cn('w-1.5 h-1.5 rounded-full flex-shrink-0', isRunning ? 'animate-pulse' : '', `bg-${teamColor}-400`)} />
             )}
@@ -91,6 +135,7 @@ export function TaskTool({
           {hasChildren ? (
             <div
               ref={childrenRef}
+              onScroll={handleChildrenScroll}
               className={cn('max-h-80 overflow-y-auto p-3 space-y-1', tk.scrollbar, 'bg-stone-50/50 dark:bg-zinc-950/50')}
             >
               {children.map((childMessage) => (

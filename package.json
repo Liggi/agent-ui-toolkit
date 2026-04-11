@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -38,6 +39,8 @@
     "tailwind-merge": "^3.0.0"
   },
   "devDependencies": {
+    "@playwright/experimental-ct-react": "^1.59.1",
+    "@playwright/test": "^1.59.1",
     "@storybook/react": "^10.3.5",
     "@storybook/react-vite": "^10.3.5",
     "@tailwindcss/typography": "^0.5.19",
