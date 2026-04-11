@@ -5,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collap
 import { useToolkitTheme } from '../context.js';
 import { formatFilePath } from '../utils/tool-utils.js';
 import { cn } from '../utils/cn.js';
-import { tk } from '../tokens.js';
+import { tk, accent } from '../tokens.js';
 import type { ChatMessage, ToolResult, CustomToolRenderer, BackgroundTaskOutput } from '../types.js';
 import { ReadTool } from './tools/ReadTool.js';
 import { EditTool } from './tools/EditTool.js';
@@ -190,21 +190,21 @@ export function ToolContent({
     // Generic loading card
     const getToolConfig = () => {
       switch (toolName) {
-        case 'Read': return { icon: FileText, label: 'Reading', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: 'text-blue-400/80' };
-        case 'Edit': case 'MultiEdit': return { icon: Edit, label: 'Editing', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: 'text-emerald-400/80' };
-        case 'Write': return { icon: FileEdit, label: 'Writing', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: 'text-violet-400/80' };
-        case 'Bash': return { icon: Terminal, label: 'Running', detail: typeof toolInput?.command === 'string' ? toolInput.command.slice(0, 60) : '', iconClass: 'text-orange-400/80' };
-        case 'Grep': return { icon: Search, label: 'Searching', detail: String(toolInput?.pattern ?? ''), iconClass: 'text-amber-400/80' };
-        case 'Glob': return { icon: Search, label: 'Finding', detail: String(toolInput?.pattern ?? ''), iconClass: 'text-violet-400/80' };
-        case 'LS': return { icon: List, label: 'Listing', detail: String(toolInput?.path ?? '.'), iconClass: 'text-violet-400/80' };
-        case 'ToolSearch': return { icon: Search, label: 'Loading tools', detail: String(toolInput?.query ?? ''), iconClass: 'text-violet-400/80' };
-        case 'WebSearch': return { icon: Globe, label: 'Searching', detail: String(toolInput?.query ?? ''), iconClass: 'text-emerald-400/80' };
-        case 'WebFetch': return { icon: ExternalLink, label: 'Fetching', detail: toolInput?.url ? (() => { try { return new URL(toolInput.url as string).hostname; } catch { return ''; } })() : '', iconClass: 'text-emerald-400/80' };
+        case 'Read': return { icon: FileText, label: 'Reading', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: accent.blue.icon };
+        case 'Edit': case 'MultiEdit': return { icon: Edit, label: 'Editing', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: accent.emerald.icon };
+        case 'Write': return { icon: FileEdit, label: 'Writing', detail: formatFilePath(String(toolInput?.file_path ?? ''), workingDirectory), iconClass: accent.violet.icon };
+        case 'Bash': return { icon: Terminal, label: 'Running', detail: typeof toolInput?.command === 'string' ? toolInput.command.slice(0, 60) : '', iconClass: accent.orange.icon };
+        case 'Grep': return { icon: Search, label: 'Searching', detail: String(toolInput?.pattern ?? ''), iconClass: accent.amber.icon };
+        case 'Glob': return { icon: Search, label: 'Finding', detail: String(toolInput?.pattern ?? ''), iconClass: accent.violet.icon };
+        case 'LS': return { icon: List, label: 'Listing', detail: String(toolInput?.path ?? '.'), iconClass: accent.violet.icon };
+        case 'ToolSearch': return { icon: Search, label: 'Loading tools', detail: String(toolInput?.query ?? ''), iconClass: accent.violet.icon };
+        case 'WebSearch': return { icon: Globe, label: 'Searching', detail: String(toolInput?.query ?? ''), iconClass: accent.emerald.icon };
+        case 'WebFetch': return { icon: ExternalLink, label: 'Fetching', detail: toolInput?.url ? (() => { try { return new URL(toolInput.url as string).hostname; } catch { return ''; } })() : '', iconClass: accent.emerald.icon };
         default: {
           if (toolName.startsWith('mcp__')) {
             const match = toolName.match(/^mcp__[^_]+__(.+)$/);
             const label = match ? match[1].replace(/_/g, ' ') : toolName;
-            return { icon: FileText, label, detail: (toolInput?.path || toolInput?.url || toolInput?.query || toolInput?.pattern || '') as string, iconClass: 'text-purple-400/80' };
+            return { icon: FileText, label, detail: (toolInput?.path || toolInput?.url || toolInput?.query || toolInput?.pattern || '') as string, iconClass: accent.purple.icon };
           }
           return { icon: FileText, label: toolName, detail: '', iconClass: tk.text.muted };
         }

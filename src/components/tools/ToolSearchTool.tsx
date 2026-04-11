@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface ToolSearchToolProps {
   input: { query?: string; max_results?: number };
@@ -41,12 +41,12 @@ export function ToolSearchTool({ input, result }: ToolSearchToolProps): React.JS
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-violet-500/20 bg-violet-500/5"
+      cardClassName={accent.violet.card}
       canExpand={hasResult}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <Search size={14} className="text-violet-400/80 flex-shrink-0" />
+            <Search size={14} className={`${accent.violet.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>Tools</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{query}</span>

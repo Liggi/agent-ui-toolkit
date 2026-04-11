@@ -4,7 +4,7 @@ import { countLines, formatFilePath } from '../../utils/tool-utils.js';
 import { detectLanguageFromPath } from '../../utils/language-detection.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface ReadToolProps {
   input: { file_path?: string; offset?: number; limit?: number };
@@ -35,11 +35,11 @@ export function ReadTool({ input, result, workingDirectory }: ReadToolProps): Re
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-blue-500/20 bg-blue-500/5"
+      cardClassName={accent.blue.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <FileText size={14} className="text-blue-400/80 flex-shrink-0" />
+            <FileText size={14} className={`${accent.blue.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>Read</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>

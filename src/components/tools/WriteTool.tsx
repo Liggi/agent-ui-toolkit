@@ -4,7 +4,7 @@ import { detectLanguageFromPath } from '../../utils/language-detection.js';
 import { formatFilePath, countLines } from '../../utils/tool-utils.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface WriteToolProps {
   input: { file_path?: string; content?: string };
@@ -26,11 +26,11 @@ export function WriteTool({ input, workingDirectory }: WriteToolProps): React.JS
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-violet-500/20 bg-violet-500/5"
+      cardClassName={accent.violet.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <FilePlus size={14} className="text-violet-400/80 flex-shrink-0" />
+            <FilePlus size={14} className={`${accent.violet.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>Write</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{displayPath}</span>

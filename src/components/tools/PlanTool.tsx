@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { PROSE_CLASSES } from '../../tokens.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface PlanToolProps {
   input: { plan?: string };
@@ -53,11 +53,11 @@ export function PlanTool({ input, result, isPendingApproval, isActedOn = false, 
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
       wrapperClassName="w-full"
-      cardClassName="border-rose-500/20 bg-rose-500/5"
+      cardClassName={accent.rose.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <ClipboardCheck size={14} className="text-rose-400/80 flex-shrink-0" />
+            <ClipboardCheck size={14} className={`${accent.rose.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>Plan</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{statusLabel}</span>

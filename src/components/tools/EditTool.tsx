@@ -6,7 +6,7 @@ import { formatFilePath } from '../../utils/tool-utils.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { ErrorBoundary } from '../shared/ErrorBoundary.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface EditEntry { old_string?: string; new_string?: string }
 
@@ -103,11 +103,11 @@ export function EditTool({ input, result, isMultiEdit = false, workingDirectory 
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-emerald-500/20 bg-emerald-500/5"
+      cardClassName={accent.emerald.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <Pencil size={14} className="text-emerald-400/80 flex-shrink-0" />
+            <Pencil size={14} className={`${accent.emerald.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>Edit</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{displayPath}</span>

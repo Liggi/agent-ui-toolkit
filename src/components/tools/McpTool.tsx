@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plug } from 'lucide-react';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { cn } from '../../utils/cn.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface McpToolProps {
   toolName: string;
@@ -39,11 +39,11 @@ export function McpTool({ toolName, input, result }: McpToolProps): React.JSX.El
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-purple-500/20 bg-purple-500/5"
+      cardClassName={accent.purple.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Plug size={14} className="text-purple-400/80 flex-shrink-0" />
+            <Plug size={14} className={`${accent.purple.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>{tool}</span>
             {server && <span className={`text-[10px] ${tk.text.faint}`}>{server}</span>}
           </div>

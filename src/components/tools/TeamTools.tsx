@@ -4,17 +4,7 @@ import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { useAgentColor } from '../../context.js';
 import { parseJson } from '../../utils/json.js';
 import { cn } from '../../utils/cn.js';
-import { tk } from '../../tokens.js';
-
-const TINTS: Record<string, { border: string; bg: string; icon: string }> = {
-  blue:   { border: 'border-blue-500/20',   bg: 'bg-blue-500/5',   icon: 'text-blue-400/80' },
-  green:  { border: 'border-green-500/20',  bg: 'bg-green-500/5',  icon: 'text-green-400/80' },
-  yellow: { border: 'border-amber-500/20',  bg: 'bg-amber-500/5',  icon: 'text-amber-400/80' },
-  purple: { border: 'border-purple-500/20', bg: 'bg-purple-500/5', icon: 'text-purple-400/80' },
-  red:    { border: 'border-red-500/20',    bg: 'bg-red-500/5',    icon: 'text-red-400/80' },
-  cyan:   { border: 'border-cyan-500/20',   bg: 'bg-cyan-500/5',   icon: 'text-cyan-400/80' },
-};
-const DEFAULT_TINT = { border: 'border-zinc-500/20', bg: 'bg-zinc-500/5', icon: 'text-zinc-400/80' };
+import { tk, accent, TINTS, DEFAULT_TINT } from '../../tokens.js';
 const DOT_COLORS: Record<string, string> = {
   blue: 'bg-blue-400', green: 'bg-green-400', yellow: 'bg-amber-400',
   purple: 'bg-purple-400', red: 'bg-red-400', cyan: 'bg-cyan-400',
@@ -47,15 +37,15 @@ export function TeamCreateTool({ input, result, isPending, isStreaming }: TeamCr
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-amber-500/20 bg-amber-500/5"
+      cardClassName={accent.amber.card}
       canExpand={members.length > 0}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
             {isRunning ? (
-              <Loader2 size={14} className="text-amber-400/80 animate-spin flex-shrink-0" />
+              <Loader2 size={14} className={`${accent.amber.icon} animate-spin flex-shrink-0`} />
             ) : (
-              <Users size={14} className="text-amber-400/80 flex-shrink-0" />
+              <Users size={14} className={`${accent.amber.icon} flex-shrink-0`} />
             )}
             <span className={`text-xs ${tk.text.muted}`}>{isRunning ? 'Creating team' : 'Team'}</span>
           </div>
@@ -173,7 +163,7 @@ export function TeamDeleteTool({ result, isPending, isStreaming }: TeamDeleteToo
     <CollapsibleToolCard
       isExpanded={false}
       onExpandedChange={() => {}}
-      cardClassName="border-zinc-500/20 bg-zinc-500/5"
+      cardClassName={accent.zinc.card}
       canExpand={false}
       headerContent={(
         <div className="flex items-center gap-2">

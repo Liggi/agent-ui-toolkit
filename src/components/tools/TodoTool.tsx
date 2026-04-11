@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Circle, Clock, CheckCircle, ListTodo } from 'lucide-react';
 import { parseTodos } from '../../utils/tool-utils.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface TodoToolProps {
   input: { todos?: Array<{ id?: string; content: string; status: string }> };
@@ -45,12 +45,12 @@ export function TodoTool({ input, result, isWrite }: TodoToolProps): React.JSX.E
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-indigo-500/20 bg-indigo-500/5"
+      cardClassName={accent.indigo.card}
       canExpand={todos.length > 0}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
-            <ListTodo size={14} className="text-indigo-400/80 flex-shrink-0" />
+            <ListTodo size={14} className={`${accent.indigo.icon} flex-shrink-0`} />
             <span className={`text-xs ${tk.text.muted}`}>{isWrite ? 'Todos' : 'Todo List'}</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{summaryText}</span>

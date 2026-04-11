@@ -3,7 +3,7 @@ import { Terminal, Loader2 } from 'lucide-react';
 import { codeToHtml } from 'shiki';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { useToolkitTheme } from '../../context.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 import type { BackgroundTaskOutput } from '../../types.js';
 
 function ShellHighlight({ code }: { code: string }): React.JSX.Element {
@@ -135,12 +135,12 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-orange-500/20 bg-orange-500/5"
+      cardClassName={accent.orange.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2 shrink-0">
-            {isBackgroundRunning && <Loader2 size={12} className="text-orange-400/80 animate-spin" />}
-            <Terminal size={14} className="text-orange-400/80" />
+            {isBackgroundRunning && <Loader2 size={12} className={`${accent.orange.icon} animate-spin`} />}
+            <Terminal size={14} className={accent.orange.icon} />
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>
             {description || displayCommand}

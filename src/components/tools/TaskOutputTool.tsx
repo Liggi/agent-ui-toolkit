@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { cn } from '../../utils/cn.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface TaskOutputToolProps {
   input: { task_id?: string; block?: boolean; timeout?: number };
@@ -31,14 +31,14 @@ export function TaskOutputTool({ input, result, isPending = false }: TaskOutputT
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-purple-500/20 bg-purple-500/5"
+      cardClassName={accent.purple.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
             {isPending ? (
-              <Loader2 size={14} className="text-purple-400/80 animate-spin flex-shrink-0" />
+              <Loader2 size={14} className={`${accent.purple.icon} animate-spin flex-shrink-0`} />
             ) : (
-              <Download size={14} className="text-purple-400/80 flex-shrink-0" />
+              <Download size={14} className={`${accent.purple.icon} flex-shrink-0`} />
             )}
             <span className={`text-xs ${tk.text.muted}`}>Output</span>
           </div>

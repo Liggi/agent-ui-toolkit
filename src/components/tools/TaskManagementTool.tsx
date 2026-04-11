@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Circle, Clock, CheckCircle, Pause, XCircle } from 'lucide-react';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { cn } from '../../utils/cn.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface TaskManagementToolProps {
   input: {
@@ -67,7 +67,7 @@ export function TaskManagementTool({ input, result, isUpdate }: TaskManagementTo
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-cyan-500/20 bg-cyan-500/5"
+      cardClassName={accent.cyan.card}
       canExpand={!!hasExpandableContent}
       headerContent={(
         <>

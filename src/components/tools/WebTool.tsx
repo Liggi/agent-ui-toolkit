@@ -3,7 +3,7 @@ import { Globe, ExternalLink } from 'lucide-react';
 import { extractDomain } from '../../utils/tool-utils.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { SearchResultContent, FetchResultContent } from '../shared/WebResultContent.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface WebToolProps {
   input: { query?: string; url?: string };
@@ -28,14 +28,14 @@ export function WebTool({ input, result, toolType }: WebToolProps): React.JSX.El
     <CollapsibleToolCard
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
-      cardClassName="border-emerald-500/20 bg-emerald-500/5"
+      cardClassName={accent.emerald.card}
       headerContent={(
         <>
           <div className="flex items-center gap-2">
             {isSearch ? (
-              <Globe size={14} className="text-emerald-400/80 flex-shrink-0" />
+              <Globe size={14} className={`${accent.emerald.icon} flex-shrink-0`} />
             ) : (
-              <ExternalLink size={14} className="text-emerald-400/80 flex-shrink-0" />
+              <ExternalLink size={14} className={`${accent.emerald.icon} flex-shrink-0`} />
             )}
             <span className={`text-xs ${tk.text.muted}`}>{isSearch ? 'Search' : 'Fetch'}</span>
           </div>

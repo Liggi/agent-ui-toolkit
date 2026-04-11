@@ -3,7 +3,7 @@ import { ChevronDown, Search, FolderSearch, List } from 'lucide-react';
 import { countLines, extractFileCount } from '../../utils/tool-utils.js';
 import { cn } from '../../utils/cn.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible.js';
-import { tk } from '../../tokens.js';
+import { tk, accent } from '../../tokens.js';
 
 interface SearchToolProps {
   input: { pattern?: string; path?: string };
@@ -23,13 +23,13 @@ export function SearchTool({ input, result, toolType }: SearchToolProps): React.
         const grepLines = countLines(result);
         const grepPath = input?.path ? String(input.path).split('/').pop() : '';
         const detail = grepPath ? `${input?.pattern || ''} in ${grepPath}` : (input?.pattern || '');
-        return { icon: Search, label: 'Grep', color: 'text-amber-400/80', cardStyle: 'border-amber-500/20 bg-amber-500/5', pattern: detail };
+        return { icon: Search, label: 'Grep', color: accent.amber.icon, cardStyle: accent.amber.card, pattern: detail };
       }
       case 'Glob': {
-        return { icon: FolderSearch, label: 'Glob', color: 'text-violet-400/80', cardStyle: 'border-violet-500/20 bg-violet-500/5', pattern: input?.pattern || '' };
+        return { icon: FolderSearch, label: 'Glob', color: accent.violet.icon, cardStyle: accent.violet.card, pattern: input?.pattern || '' };
       }
       case 'LS': {
-        return { icon: List, label: 'LS', color: 'text-violet-400/80', cardStyle: 'border-violet-500/20 bg-violet-500/5', pattern: input?.path || '.' };
+        return { icon: List, label: 'LS', color: accent.violet.icon, cardStyle: accent.violet.card, pattern: input?.path || '.' };
       }
     }
   };
