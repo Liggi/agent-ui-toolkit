@@ -20,6 +20,8 @@ import { PlanTool } from './tools/PlanTool.js';
 import { AskUserQuestionTool } from './tools/AskUserQuestionTool.js';
 import { FallbackTool } from './tools/FallbackTool.js';
 import { McpTool } from './tools/McpTool.js';
+import { SlackTool } from './tools/SlackTool.js';
+import { NotionTool } from './tools/NotionTool.js';
 import { TaskManagementTool } from './tools/TaskManagementTool.js';
 import { ToolSearchTool } from './tools/ToolSearchTool.js';
 import { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './tools/TeamTools.js';
@@ -261,7 +263,11 @@ export function ToolContent({
     case 'SendMessage': return <SendMessageTool input={toolInput as { type?: 'message' | 'broadcast' | 'shutdown_request' | 'shutdown_response' | 'plan_approval_response'; recipient?: string; content?: string; summary?: string; approve?: boolean }} result={resultContent} isPending={isPending} isStreaming={isStreaming} />;
     case 'TeamDelete': return <TeamDeleteTool result={resultContent} isPending={isPending} isStreaming={isStreaming} />;
     default:
-      if (toolName.startsWith('mcp__')) return <McpTool toolName={toolName} input={toolInput} result={resultContent} />;
+      if (toolName.startsWith('mcp__')) {
+        if (toolName.includes('slack__')) return <SlackTool toolName={toolName} input={toolInput} result={resultContent} />;
+        if (toolName.includes('otion__') || toolName.includes('notion__')) return <NotionTool toolName={toolName} input={toolInput} result={resultContent} />;
+        return <McpTool toolName={toolName} input={toolInput} result={resultContent} />;
+      }
       return <FallbackTool toolName={toolName} input={toolInput} result={resultContent} />;
   }
 }
