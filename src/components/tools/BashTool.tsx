@@ -5,16 +5,31 @@ import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { useToolkitTheme } from '../../context.js';
 import { tk, accent } from '../../tokens.js';
 import type { BackgroundTaskOutput } from '../../types.js';
+import { formatShellCommand } from '../../utils/format-shell.js';
 
-function ShellHighlight({ code }: { code: string }): React.JSX.Element {
+/** Detect if output is JSON and pretty-print it. Returns [formatted, language]. */
+function detectAndFormat(code: string): [string, string] {
+  const trimmed = code.trim();
+  if ((trimmed.startsWith('{') || trimmed.startsWith('[')) && trimmed.length > 2) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      return [JSON.stringify(parsed, null, 2), 'json'];
+    } catch { /* not JSON */ }
+  }
+  return [code, 'shellscript'];
+}
+
+function ShellHighlight({ code, lang }: { code: string; lang?: string }): React.JSX.Element {
   const theme = useToolkitTheme();
   const shikiTheme = theme === 'dark' ? 'github-dark-default' : 'github-light-default';
   const [html, setHtml] = useState<string | null>(null);
 
+  const language = lang || 'shellscript';
+
   useEffect(() => {
-    codeToHtml(code, { lang: 'shellscript', theme: shikiTheme })
+    codeToHtml(code, { lang: language, theme: shikiTheme })
       .then(setHtml).catch(() => setHtml(null));
-  }, [code, shikiTheme]);
+  }, [code, language, shikiTheme]);
 
   if (!html) {
     return (
@@ -153,7 +168,7 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
             <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5`}>
               <div className="flex gap-2">
                 <span className="text-emerald-400/60 font-mono text-[13px] select-none shrink-0 leading-relaxed">$</span>
-                <ShellHighlight code={command} />
+                <ShellHighlight code={formatShellCommand(command)} />
               </div>
             </div>
           )}
@@ -173,11 +188,14 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
               <span>Waiting for output…</span>
             </div>
           )}
-          {!bgOutputPath && result && (
-            <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5`}>
-              <ShellHighlight code={result} />
-            </div>
-          )}
+          {!bgOutputPath && result && (() => {
+            const [formatted, lang] = detectAndFormat(result);
+            return (
+              <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5`}>
+                <ShellHighlight code={formatted} lang={lang} />
+              </div>
+            );
+          })()}
           {!bgOutputPath && !result && isPending && (
             <div className={`border-t ${tk.separator} px-3 py-2 text-[13px] ${tk.text.muted} ${tk.codeBgSubtle}`}>
               Waiting for stdout...
