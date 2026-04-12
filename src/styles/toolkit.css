@@ -1,2 +1,33 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/*
+ * Composer status colors — consumers override these CSS custom properties
+ * to re-theme the Composer (e.g., Lattice sets --color-composer-active to cyan).
+ *
+ * Defined as @theme colors so Tailwind opacity modifiers work:
+ *   bg-composer-active/10, text-composer-ready, border-composer-caution/30
+ */
+@theme {
+  --color-composer-active: #60a5fa;   /* blue-400  — "Working" */
+  --color-composer-ready: #34d399;    /* emerald-400 — "Ready" */
+  --color-composer-caution: #fbbf24;  /* amber-400 — "Starting" / "Stopping" */
+  --color-composer-danger: #fb7185;   /* rose-400 — "Stop" */
+  --color-composer-muted: #a1a1aa;    /* zinc-400 — "Off" / inactive */
+
+  --color-composer-surface: #ffffff;
+  --color-composer-surface-elevated: #f4f4f5;
+  --color-composer-border: #e4e4e7;
+  --color-composer-text: #18181b;
+  --color-composer-text-secondary: #71717a;
+  --color-composer-text-faint: #a1a1aa;
+}
+
+.dark {
+  --color-composer-surface: #09090b;
+  --color-composer-surface-elevated: #18181b;
+  --color-composer-border: #27272a;
+  --color-composer-text: #fafafa;
+  --color-composer-text-secondary: #a1a1aa;
+  --color-composer-text-faint: #52525b;
+}

@@ -6,6 +6,7 @@ import { useToolkitTheme } from '../../context.js';
 import { tk, accent } from '../../tokens.js';
 import type { BackgroundTaskOutput } from '../../types.js';
 import { formatShellCommand } from '../../utils/format-shell.js';
+import { stripRerunFooter } from '../../utils/tool-utils.js';
 
 /** Detect if output is JSON and pretty-print it. Returns [formatted, language]. */
 function detectAndFormat(code: string): [string, string] {
@@ -126,7 +127,8 @@ function countOutputLines(text: string): number {
 
 const AUTO_EXPAND_THRESHOLD = 5;
 
-export function BashTool({ input, result, isPending = false, fetchBackgroundOutput }: BashToolProps): React.JSX.Element {
+export function BashTool({ input, result: rawResult, isPending = false, fetchBackgroundOutput }: BashToolProps): React.JSX.Element {
+  const result = stripRerunFooter(rawResult);
   const resultLines = countOutputLines(result);
   const [isExpanded, setIsExpanded] = useState(() => !isPending && resultLines > 0 && resultLines <= AUTO_EXPAND_THRESHOLD);
 

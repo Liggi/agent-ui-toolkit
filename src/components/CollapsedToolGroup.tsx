@@ -5,6 +5,7 @@ import { codeToHtml } from 'shiki';
 import { useToolkitTheme } from '../context.js';
 import { detectLanguageFromPath } from '../utils/language-detection.js';
 import { SearchResultContent, ProseResultContent } from './shared/WebResultContent.js';
+import { stripRerunFooter } from '../utils/tool-utils.js';
 import { tk } from '../tokens.js';
 
 // ---- Types ----
@@ -153,7 +154,8 @@ export function CollapsedToolGroup({ group, temporalState }: CollapsedToolGroupP
               const meta = toolMeta[call.tool] ?? toolMeta.read;
               const Icon = meta.icon;
               const isCallExpanded = expandedCalls.has(index);
-              const hasResult = call.resultContent && call.status === 'success';
+              const cleanedResult = call.resultContent ? stripRerunFooter(call.resultContent) : call.resultContent;
+              const hasResult = cleanedResult && call.status === 'success';
               const language = call.tool === 'read' ? (detectLanguageFromPath(call.filePath ?? call.input) || 'text') : 'text';
 
               return (
@@ -184,11 +186,11 @@ export function CollapsedToolGroup({ group, temporalState }: CollapsedToolGroupP
                       )}>
                         <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-stone-300 via-stone-400 to-stone-300 dark:from-zinc-700 dark:via-zinc-600 dark:to-zinc-700" />
                         {call.tool === 'read' ? (
-                          <SyntaxHighlightedCode code={stripLineNumbers(call.resultContent!)} language={language} />
+                          <SyntaxHighlightedCode code={stripLineNumbers(cleanedResult!)} language={language} />
                         ) : call.tool === 'web-search' ? (
-                          <SearchResultContent result={call.resultContent!} compact />
+                          <SearchResultContent result={cleanedResult!} compact />
                         ) : (
-                          <ProseResultContent content={call.resultContent!} compact />
+                          <ProseResultContent content={cleanedResult!} compact />
                         )}
                       </div>
                     </div>

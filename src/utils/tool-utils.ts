@@ -52,6 +52,11 @@ export function parseTodos(content: string): TodoItem[] {
   return [];
 }
 
+/** Strip the `[rerun: bN]` footer that Claude Code appends to Bash tool results. */
+export function stripRerunFooter(text: string): string {
+  return text.replace(/\n?\[rerun: b\d+\]\s*$/, '');
+}
+
 export function extractDomain(url: string): string {
   try {
     return new URL(url).hostname;

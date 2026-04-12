@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { summarizeCommand, parseBackgroundOutputPath } from '../components/tools/BashTool.js';
+import { stripRerunFooter } from '../utils/tool-utils.js';
 
 describe('summarizeCommand', () => {
   it('returns short commands unchanged', () => {
@@ -72,5 +73,23 @@ describe('parseBackgroundOutputPath', () => {
     expect(parseBackgroundOutputPath(
       '  Output is being written to:   /tmp/bg.output  \n',
     )).toBe('/tmp/bg.output');
+  });
+});
+
+describe('stripRerunFooter', () => {
+  it('strips [rerun: bN] from end of output', () => {
+    expect(stripRerunFooter('{"success":true}\n[rerun: b1]')).toBe('{"success":true}');
+    expect(stripRerunFooter('output\n[rerun: b12]')).toBe('output');
+  });
+
+  it('handles trailing whitespace after footer', () => {
+    expect(stripRerunFooter('output\n[rerun: b3]  ')).toBe('output');
+    expect(stripRerunFooter('output\n[rerun: b3]\n')).toBe('output');
+  });
+
+  it('leaves output unchanged when no footer present', () => {
+    expect(stripRerunFooter('normal output')).toBe('normal output');
+    expect(stripRerunFooter('')).toBe('');
+    expect(stripRerunFooter('contains [rerun: b1] in middle\nmore text')).toBe('contains [rerun: b1] in middle\nmore text');
   });
 });

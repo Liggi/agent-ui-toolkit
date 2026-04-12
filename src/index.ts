@@ -73,3 +73,23 @@ export { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './components/to
 
 // ── UI primitives (for building custom tool cards) ──
 export { Collapsible, CollapsibleTrigger, CollapsibleContent } from './components/ui/collapsible.js';
+export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from './components/ui/dialog.js';
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/ui/tooltip.js';
+
+// ── Composer ──
+export { Composer } from './components/Composer/index.js';
+export type {
+  ComposerProps,
+  ComposerRef,
+  ComposerCoreConfig,
+  ComposerFeatureConfig,
+  ComposerRuntimeConfig,
+  FileSystemEntry,
+  Command,
+  AttachmentBlock,
+} from './components/Composer/index.js';
+
+// ── Hooks ──
+export { useLocalStorage } from './hooks/useLocalStorage.js';
+export { useAttachments } from './hooks/useAttachments.js';
+export type { Attachment, UseAttachmentsReturn } from './hooks/useAttachments.js';
