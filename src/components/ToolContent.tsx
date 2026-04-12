@@ -20,6 +20,7 @@ import { PlanTool } from './tools/PlanTool.js';
 import { AskUserQuestionTool } from './tools/AskUserQuestionTool.js';
 import { FallbackTool } from './tools/FallbackTool.js';
 import { McpTool } from './tools/McpTool.js';
+import { MonitorTool } from './tools/MonitorTool.js';
 import { SlackTool } from './tools/SlackTool.js';
 import { NotionTool } from './tools/NotionTool.js';
 import { TaskManagementTool } from './tools/TaskManagementTool.js';
@@ -82,18 +83,18 @@ function ErrorBlock({ message, toolName, context, isExpanded, onExpandedChange }
 
   const headerContent = (
     <>
-      <AlertTriangle size={14} className="text-red-400/80 flex-shrink-0" />
-      {label && <span className="text-xs text-red-400/60 flex-shrink-0">{label}</span>}
+      <AlertTriangle size={14} className="text-red-600 dark:text-red-400/80 flex-shrink-0" />
+      {label && <span className="text-xs text-red-600/70 dark:text-red-400/60 flex-shrink-0">{label}</span>}
       {context && <span className={`text-xs ${tk.text.secondary} truncate flex-shrink min-w-0`}>{context}</span>}
-      {context && <span className={tk.text.faint}>|</span>}
-      <span className="text-xs text-red-300/70 truncate flex-1">{headerText}</span>
+      {context && <span className={`text-xs ${tk.text.faint}`}>|</span>}
+      <span className="text-xs text-red-600/60 dark:text-red-300/70 truncate flex-1">{headerText}</span>
     </>
   );
 
   if (!isMultiLine) {
     return (
       <div className="w-fit max-w-full">
-        <div className="border border-red-500/30 rounded-lg overflow-hidden bg-red-500/5">
+        <div className="border border-red-500/35 rounded-lg overflow-hidden bg-red-500/10 dark:bg-red-500/5">
           <div className="flex items-center gap-2 px-3 py-2">{headerContent}</div>
         </div>
       </div>
@@ -103,11 +104,11 @@ function ErrorBlock({ message, toolName, context, isExpanded, onExpandedChange }
   return (
     <div className="w-fit max-w-full">
       <Collapsible open={isExpanded} onOpenChange={onExpandedChange}>
-        <div className="border border-red-500/30 rounded-lg overflow-hidden bg-red-500/5">
+        <div className="border border-red-500/35 rounded-lg overflow-hidden bg-red-500/10 dark:bg-red-500/5">
           <CollapsibleTrigger className="w-full text-left cursor-pointer select-none">
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-red-500/10 transition-colors">
+            <div className="flex items-center gap-2 px-3 py-2 hover:bg-red-500/15 dark:hover:bg-red-500/10 transition-colors">
               {headerContent}
-              <ChevronDown size={12} className={`text-red-400/60 transition-transform duration-150 flex-shrink-0 ${!isExpanded ? '-rotate-90' : ''}`} />
+              <ChevronDown size={12} className={`text-red-600/60 dark:text-red-400/60 transition-transform duration-150 flex-shrink-0 ${!isExpanded ? '-rotate-90' : ''}`} />
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
@@ -188,6 +189,9 @@ export function ToolContent({
     if (toolName === 'Bash') {
       return <BashTool input={toolInput} result={resultContent} workingDirectory={workingDirectory} isPending fetchBackgroundOutput={fetchBackgroundOutput} />;
     }
+    if (toolName === 'Monitor') {
+      return <MonitorTool input={toolInput as { description?: string; command?: string; timeout_ms?: number; persistent?: boolean }} result={resultContent} isPending />;
+    }
 
     // Generic loading card
     const getToolConfig = () => {
@@ -249,6 +253,7 @@ export function ToolContent({
     case 'Edit': case 'MultiEdit': return <EditTool input={toolInput} result={resultContent} isMultiEdit={toolName === 'MultiEdit'} workingDirectory={workingDirectory} />;
     case 'Write': return <WriteTool input={toolInput} result={resultContent} workingDirectory={workingDirectory} />;
     case 'Bash': return <BashTool input={toolInput} result={resultContent} fetchBackgroundOutput={fetchBackgroundOutput} />;
+    case 'Monitor': return <MonitorTool input={toolInput as { description?: string; command?: string; timeout_ms?: number; persistent?: boolean }} result={resultContent} />;
     case 'Grep': case 'Glob': case 'LS': return <SearchTool input={toolInput} result={resultContent} toolType={toolName} />;
     case 'TodoRead': case 'TodoWrite': return <TodoTool input={toolInput} result={resultContent} isWrite={toolName === 'TodoWrite'} />;
     case 'WebSearch': case 'WebFetch': return <WebTool input={toolInput} result={resultContent} toolType={toolName} />;
