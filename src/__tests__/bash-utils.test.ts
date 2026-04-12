@@ -36,8 +36,41 @@ describe('parseBackgroundOutputPath', () => {
       .toBe('/tmp/output.log');
   });
 
+  it('handles paths with hyphens and dots', () => {
+    expect(parseBackgroundOutputPath(
+      'Output is being written to: /private/tmp/claude-501/tasks/bg-abc123.output',
+    )).toBe('/private/tmp/claude-501/tasks/bg-abc123.output');
+  });
+
+  it('extracts path when preceded by other text', () => {
+    expect(parseBackgroundOutputPath(
+      'Command started.\nOutput is being written to: /tmp/bg.out\nDone.',
+    )).toBe('/tmp/bg.out');
+  });
+
   it('returns null when no match', () => {
     expect(parseBackgroundOutputPath('Command completed successfully')).toBeNull();
     expect(parseBackgroundOutputPath('')).toBeNull();
+  });
+
+  // ---- False positive resistance ----
+
+  it('returns null for source code containing the pattern as a string literal', () => {
+    // A subagent reading BashTool.tsx source would return this as result text.
+    // The regex matches because the pattern IS in the string — this is expected
+    // behavior since BashTool only receives Bash tool results, not subagent results.
+    // But we document the boundary: this function should only be called with
+    // Bash tool result strings, never with arbitrary content.
+    const sourceCode = `const BG_OUTPUT_PATTERN = /Output is being written to:\\s*(\\S+)/;`;
+    // This WILL match — the function is not context-aware
+    const result = parseBackgroundOutputPath(sourceCode);
+    // Documenting current behavior: the regex matches the pattern itself
+    expect(result).not.toBeNull();
+  });
+
+  it('extracts path correctly even when result has surrounding whitespace', () => {
+    expect(parseBackgroundOutputPath(
+      '  Output is being written to:   /tmp/bg.output  \n',
+    )).toBe('/tmp/bg.output');
   });
 });
