@@ -45,10 +45,10 @@ function SearchLinks({ links }: { links: SearchLink[] }): React.JSX.Element {
             className="w-3 h-3 rounded-sm mt-0.5 flex-shrink-0"
           />
           <div className="min-w-0">
-            <div className={`text-[11px] ${tk.text.primary} group-hover:text-blue-400 dark:group-hover:text-blue-300 truncate`}>
+            <div className={`text-[13px] ${tk.text.primary} group-hover:text-blue-400 dark:group-hover:text-blue-300 truncate`}>
               {link.title}
             </div>
-            <div className={`text-[10px] ${tk.text.faint} truncate`}>
+            <div className={`text-[13px] ${tk.text.faint} truncate`}>
               {extractDomain(link.url)}
             </div>
           </div>
@@ -94,7 +94,7 @@ export function FetchResultContent({ result, url, compact }: { result: string; u
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] transition-all
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] transition-all
               bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-700
               dark:bg-zinc-800/50 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-300`}
             style={{ textDecoration: 'none' }}

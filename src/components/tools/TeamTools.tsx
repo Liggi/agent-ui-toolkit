@@ -57,7 +57,7 @@ export function TeamCreateTool({ input, result, isPending, isStreaming }: TeamCr
       content={members.length > 0 ? (
         <div className={`border-t ${tk.separator} px-3 py-2 flex flex-wrap gap-1.5`}>
           {members.map((member) => (
-            <span key={member.name} className={cn('inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded', 'bg-stone-100 dark:bg-zinc-800/50')}>
+            <span key={member.name} className={cn('inline-flex items-center gap-1.5 text-[13px] px-2 py-0.5 rounded', 'bg-stone-100 dark:bg-zinc-800/50')}>
               <span className={cn('w-1.5 h-1.5 rounded-full', DOT_COLORS[member.color || ''] || 'bg-zinc-500')} />
               <span className={tk.text.primary}>{member.name}</span>
               {member.agentType && member.agentType !== 'general-purpose' && (
@@ -139,7 +139,7 @@ export function SendMessageTool({ input, result, isPending, isStreaming }: SendM
       )}
       content={content ? (
         <div className={`border-t ${tk.separator}`}>
-          <pre className={cn('m-0 px-3 py-2.5 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
+          <pre className={cn('m-0 px-3 py-2.5 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
             {content.length > 500 ? content.slice(0, 500) + '...' : content}
           </pre>
         </div>

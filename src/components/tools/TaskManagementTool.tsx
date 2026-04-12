@@ -31,7 +31,7 @@ function getStatusIcon(status: string | undefined): React.JSX.Element {
 }
 
 function getStatusBadge(status: string | undefined): React.JSX.Element | null {
-  const base = 'text-[10px] px-1.5 py-0.5 rounded';
+  const base = 'text-[13px] px-1.5 py-0.5 rounded';
   switch (status) {
     case 'completed': case 'done':
       return <span className={`${base} bg-emerald-500/15 text-emerald-400/80`}>done</span>;
@@ -86,13 +86,13 @@ export function TaskManagementTool({ input, result, isUpdate }: TaskManagementTo
           )}
           {description && <div className={`text-xs ${tk.text.secondary}`}>{description}</div>}
           {hasBlockedBy && (
-            <div className={`text-[10px] ${tk.text.muted}`}>
+            <div className={`text-[13px] ${tk.text.muted}`}>
               <span className="text-cyan-400/80">Blocked by:</span>{' '}
               {(input.blockedBy || input.addBlockedBy || []).join(', ')}
             </div>
           )}
           {result && result.trim() && (
-            <pre className={cn('m-0 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words rounded p-2', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words rounded p-2', tk.codeBg, tk.text.primary)}>
               {result}
             </pre>
           )}

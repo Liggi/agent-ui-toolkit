@@ -43,13 +43,13 @@ export function TaskOutputTool({ input, result, isPending = false }: TaskOutputT
             <span className={`text-xs ${tk.text.muted}`}>Output</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{getSummary()}</span>
-          <span className={`text-[10px] ${tk.text.faint} font-mono`}>{taskId.slice(0, 8)}</span>
+          <span className={`text-[13px] ${tk.text.faint} font-mono`}>{taskId.slice(0, 8)}</span>
         </>
       )}
       content={(
         <div className={`border-t ${tk.separator}`}>
           {result ? (
-            <pre className={cn('m-0 px-3 py-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words max-h-96 overflow-auto', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 px-3 py-3 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words max-h-96 overflow-auto', tk.codeBg, tk.text.primary)}>
               {result}
             </pre>
           ) : !isPending ? (

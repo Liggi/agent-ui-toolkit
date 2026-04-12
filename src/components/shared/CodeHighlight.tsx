@@ -55,12 +55,12 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
 
       {html ? (
         <div
-          className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:text-[10px] [&_pre]:leading-relaxed [&_pre]:overflow-x-auto [&_code]:!bg-transparent"
+          className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:text-[13px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:!bg-transparent"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       ) : (
         <pre className={cn(
-          'px-3 py-2.5 text-[10px] whitespace-pre-wrap leading-relaxed overflow-x-auto font-mono m-0',
+          'px-3 py-2.5 text-[13px] whitespace-pre-wrap break-words leading-relaxed font-mono m-0',
           tk.text.secondary,
         )}>
           {displayCode}
@@ -69,7 +69,7 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
 
       {!isExpanded && shouldShowExpandButton && (
         <div className={cn(
-          'text-center text-[10px] py-1.5',
+          'text-center text-[13px] py-1.5',
           tk.separator,
           'border-t',
           tk.text.faint,

@@ -103,12 +103,12 @@ export function AskUserQuestionTool({
       </div>
 
       <div className="p-3 space-y-3">
-        {isRecovered && <div className="text-[10px] text-cyan-400/50">Session paused. Answer to resume.</div>}
+        {isRecovered && <div className="text-[13px] text-cyan-400/50">Session paused. Answer to resume.</div>}
         {questions.length === 0 && <div className="text-xs text-amber-400">No questions received. Waiting for question data...</div>}
 
         {questions.map((question, qIdx) => (
           <div key={qIdx} className="space-y-2">
-            {question.header && <span className="text-[10px] text-cyan-400/40">{question.header}</span>}
+            {question.header && <span className="text-[13px] text-cyan-400/40">{question.header}</span>}
             <div className={`text-xs ${tk.text.primary}`}>{question.question}</div>
             <div className="flex flex-wrap gap-1.5">
               {question.options.map((option, oIdx) => {
@@ -120,7 +120,7 @@ export function AskUserQuestionTool({
                     onClick={() => handleOptionToggle(qIdx, option.label, question.multiSelect || false)}
                     disabled={isSubmitting || !questionId}
                     style={{ touchAction: 'manipulation' }}
-                    className={`px-3 py-1.5 rounded border text-[11px] transition-colors select-none flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded border text-[13px] transition-colors select-none flex items-center gap-1.5 ${
                       isSelected
                         ? 'border-cyan-400/50 bg-cyan-500/15 text-cyan-200'
                         : `border-stone-300 dark:border-zinc-700/40 bg-stone-50 dark:bg-zinc-900/50 ${tk.text.secondary} hover:border-cyan-500/30 hover:${tk.text.primary}`
@@ -136,7 +136,7 @@ export function AskUserQuestionTool({
                 onClick={() => handleOtherToggle(qIdx)}
                 disabled={isSubmitting || !questionId}
                 style={{ touchAction: 'manipulation' }}
-                className={`px-3 py-1.5 rounded border border-dashed text-[11px] transition-colors select-none flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded border border-dashed text-[13px] transition-colors select-none flex items-center gap-1.5 ${
                   showOther[qIdx]
                     ? 'border-cyan-400/50 bg-cyan-500/10 text-cyan-300'
                     : `border-stone-300 dark:border-zinc-700/30 bg-stone-50 dark:bg-zinc-900/30 ${tk.text.muted} hover:border-cyan-500/30`
@@ -151,7 +151,7 @@ export function AskUserQuestionTool({
                 onChange={(e) => setOtherText(prev => ({ ...prev, [qIdx]: e.target.value }))}
                 placeholder="Type your response..."
                 disabled={isSubmitting}
-                className={`w-full px-3 py-2 rounded border text-[11px] placeholder:${tk.text.faint} focus:outline-none focus:border-cyan-500/40 resize-none transition-colors
+                className={`w-full px-3 py-2 rounded border text-[13px] placeholder:${tk.text.faint} focus:outline-none focus:border-cyan-500/40 resize-none transition-colors
                   border-stone-300 dark:border-zinc-700/40 bg-stone-50 dark:bg-zinc-900/50 ${tk.text.primary}`}
                 rows={2}
               />
@@ -161,14 +161,14 @@ export function AskUserQuestionTool({
 
         <div className="flex items-center justify-between gap-3 pt-1">
           {hasAnyRecommended ? (
-            <div className={`flex items-center gap-1.5 text-[10px] ${tk.text.faint}`}>
+            <div className={`flex items-center gap-1.5 text-[13px] ${tk.text.faint}`}>
               <Star size={10} className="text-cyan-400/60 fill-cyan-400/30" /> <span>Recommended</span>
             </div>
           ) : <div />}
           <button
             onClick={handleSubmit}
             disabled={!allAnswered || isSubmitting || !questionId}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] transition-colors ${
               allAnswered && !isSubmitting && questionId
                 ? 'border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 cursor-pointer'
                 : `border border-stone-300 dark:border-zinc-700/40 ${tk.text.faint} cursor-not-allowed`

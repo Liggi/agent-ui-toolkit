@@ -24,7 +24,7 @@ const LazyDiffViewer = React.lazy(async () => {
 
 function DiffViewerFallback({ oldValue, newValue }: { oldValue: string; newValue: string }): React.JSX.Element {
   return (
-    <pre className={cn('m-0 overflow-x-auto px-3 py-2.5 font-mono text-[10px] leading-relaxed', tk.codeBg, tk.text.primary)}>
+    <pre className={cn('m-0 px-3 py-2.5 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed', tk.codeBg, tk.text.primary)}>
       <code>{newValue || oldValue || 'No changes'}</code>
     </pre>
   );
@@ -111,7 +111,7 @@ export function EditTool({ input, result, isMultiEdit = false, workingDirectory 
             <span className={`text-xs ${tk.text.muted}`}>Edit</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{displayPath}</span>
-          <span className={cn('text-[10px] tabular-nums flex-shrink-0', deltaColor)}>{deltaText}</span>
+          <span className={cn('text-[13px] tabular-nums flex-shrink-0', deltaColor)}>{deltaText}</span>
         </>
       )}
       content={(

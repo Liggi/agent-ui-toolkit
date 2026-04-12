@@ -66,7 +66,7 @@ export function DiffViewer({ oldValue, newValue, language = 'text' }: DiffViewer
         </button>
       )}
 
-      <div className="font-mono text-[10px] leading-relaxed overflow-x-auto">
+      <div className="font-mono text-[13px] leading-relaxed">
         {linesToShow.map((line) => {
           const bgClass = line.type === 'added' ? 'bg-emerald-500/10' : line.type === 'removed' ? 'bg-red-500/10' : '';
           const prefixClass = line.type === 'added' ? 'text-emerald-400/70' : line.type === 'removed' ? 'text-red-400/70' : 'text-stone-300 dark:text-zinc-700';

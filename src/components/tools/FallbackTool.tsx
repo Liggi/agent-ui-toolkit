@@ -46,13 +46,13 @@ export function FallbackTool({ toolName, input, result }: FallbackToolProps): Re
       content={(
         <div className={`border-t ${tk.separator}`}>
           {result && (
-            <pre className={cn('m-0 px-3 py-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 px-3 py-3 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
               {formatContent(result)}
             </pre>
           )}
           {input && (
-            <div className={cn('border-t px-3 py-2.5 font-mono text-[10px] leading-relaxed', tk.separator, tk.codeBgSubtle)}>
-              <span className={`uppercase text-[10px] tracking-wider ${tk.text.faint}`}>Input</span>
+            <div className={cn('border-t px-3 py-2.5 font-mono text-[13px] leading-relaxed', tk.separator, tk.codeBgSubtle)}>
+              <span className={`uppercase text-[13px] tracking-wider ${tk.text.faint}`}>Input</span>
               <pre className={cn('m-0 mt-1 whitespace-pre-wrap break-words', tk.text.secondary)}>
                 {JSON.stringify(input, null, 2)}
               </pre>

@@ -133,7 +133,7 @@ export function SlackTool({ toolName, input, result }: SlackToolProps): React.JS
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{summary}</span>
           {hasStructuredData && (
-            <span className={`text-[10px] ${tk.text.faint} flex-shrink-0`}>
+            <span className={`text-[13px] ${tk.text.faint} flex-shrink-0`}>
               {messages.length} message{messages.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -152,20 +152,20 @@ export function SlackTool({ toolName, input, result }: SlackToolProps): React.JS
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <span className={cn('text-[11px] font-medium', tk.text.primary)}>
+                      <span className={cn('text-[13px] font-medium', tk.text.primary)}>
                         {msg.realName || msg.userName}
                       </span>
                       {msg.channel && (
-                        <span className={cn('text-[10px] flex items-center gap-0.5', tk.text.faint)}>
+                        <span className={cn('text-[13px] flex items-center gap-0.5', tk.text.faint)}>
                           <Hash size={8} />
                           {msg.channel.replace(/^#/, '')}
                         </span>
                       )}
-                      <span className={cn('text-[10px] ml-auto flex-shrink-0', tk.text.faint)}>
+                      <span className={cn('text-[13px] ml-auto flex-shrink-0', tk.text.faint)}>
                         {formatTime(msg.time)}
                       </span>
                     </div>
-                    <p className={cn('text-[11px] leading-relaxed mt-0.5 whitespace-pre-wrap break-words', tk.text.secondary)}>
+                    <p className={cn('text-[13px] leading-relaxed mt-0.5 whitespace-pre-wrap break-words', tk.text.secondary)}>
                       {msg.text}
                     </p>
                   </div>
@@ -173,7 +173,7 @@ export function SlackTool({ toolName, input, result }: SlackToolProps): React.JS
               ))}
             </div>
           ) : (
-            <pre className={cn('m-0 px-3 py-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 px-3 py-3 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
               {result}
             </pre>
           )}

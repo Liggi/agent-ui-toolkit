@@ -63,25 +63,25 @@ export const DEFAULT_TINT = { border: 'border-parchment-400/40 dark:border-zinc-
  * Light mode uses Sundial parchment palette; dark mode uses zinc.
  */
 export const PROSE_CLASSES = `prose dark:prose-invert prose-sm max-w-none
-  [&_h1]:text-[13px] [&_h1]:font-semibold [&_h1]:text-parchment-900 dark:[&_h1]:text-zinc-200 [&_h1]:mt-3 [&_h1]:mb-1
-  [&_h2]:text-[12px] [&_h2]:font-semibold [&_h2]:text-parchment-800 dark:[&_h2]:text-zinc-300 [&_h2]:mt-2.5 [&_h2]:mb-1
-  [&_h3]:text-[11px] [&_h3]:font-medium [&_h3]:text-parchment-600 dark:[&_h3]:text-zinc-400 [&_h3]:mt-2 [&_h3]:mb-0.5
-  [&_p]:text-[11px] [&_p]:text-parchment-600 dark:[&_p]:text-zinc-400 [&_p]:leading-relaxed [&_p]:my-1
-  [&_li]:text-[11px] [&_li]:text-parchment-600 dark:[&_li]:text-zinc-400 [&_li]:leading-relaxed
+  [&_h1]:text-[15px] [&_h1]:font-semibold [&_h1]:text-parchment-900 dark:[&_h1]:text-zinc-200 [&_h1]:mt-3 [&_h1]:mb-1
+  [&_h2]:text-[14px] [&_h2]:font-semibold [&_h2]:text-parchment-800 dark:[&_h2]:text-zinc-300 [&_h2]:mt-2.5 [&_h2]:mb-1
+  [&_h3]:text-[13px] [&_h3]:font-medium [&_h3]:text-parchment-600 dark:[&_h3]:text-zinc-400 [&_h3]:mt-2 [&_h3]:mb-0.5
+  [&_p]:text-[13px] [&_p]:text-parchment-600 dark:[&_p]:text-zinc-400 [&_p]:leading-relaxed [&_p]:my-1
+  [&_li]:text-[13px] [&_li]:text-parchment-600 dark:[&_li]:text-zinc-400 [&_li]:leading-relaxed
   [&_ul]:my-1 [&_ol]:my-1
   [&_strong]:text-parchment-800 dark:[&_strong]:text-zinc-300 [&_strong]:font-medium
   [&_a]:text-blue-600 dark:[&_a]:text-blue-400/80 [&_a]:no-underline hover:[&_a]:text-blue-500 dark:hover:[&_a]:text-blue-300
-  [&_code]:text-[10px] [&_code]:bg-parchment-200 dark:[&_code]:bg-zinc-800/50 [&_code]:px-1 [&_code]:rounded
+  [&_code]:text-[12px] [&_code]:bg-parchment-200 dark:[&_code]:bg-zinc-800/50 [&_code]:px-1 [&_code]:rounded
   [&_hr]:border-parchment-300 dark:[&_hr]:border-zinc-800/40 [&_hr]:my-2`;
 
 /** Compact variant for smaller containers (collapsed groups). */
 export const PROSE_CLASSES_SM = `prose dark:prose-invert prose-sm max-w-none
-  [&_h1]:text-[12px] [&_h1]:font-semibold [&_h1]:text-parchment-900 dark:[&_h1]:text-zinc-200 [&_h1]:mt-2 [&_h1]:mb-1
-  [&_h2]:text-[11px] [&_h2]:font-semibold [&_h2]:text-parchment-800 dark:[&_h2]:text-zinc-300 [&_h2]:mt-2 [&_h2]:mb-0.5
-  [&_h3]:text-[11px] [&_h3]:font-medium [&_h3]:text-parchment-600 dark:[&_h3]:text-zinc-400 [&_h3]:mt-1.5 [&_h3]:mb-0.5
-  [&_p]:text-[10px] [&_p]:text-parchment-600 dark:[&_p]:text-zinc-400 [&_p]:leading-relaxed [&_p]:my-1
-  [&_li]:text-[10px] [&_li]:text-parchment-600 dark:[&_li]:text-zinc-400 [&_li]:leading-relaxed
+  [&_h1]:text-[13px] [&_h1]:font-semibold [&_h1]:text-parchment-900 dark:[&_h1]:text-zinc-200 [&_h1]:mt-2 [&_h1]:mb-1
+  [&_h2]:text-[13px] [&_h2]:font-semibold [&_h2]:text-parchment-800 dark:[&_h2]:text-zinc-300 [&_h2]:mt-2 [&_h2]:mb-0.5
+  [&_h3]:text-[13px] [&_h3]:font-medium [&_h3]:text-parchment-600 dark:[&_h3]:text-zinc-400 [&_h3]:mt-1.5 [&_h3]:mb-0.5
+  [&_p]:text-[13px] [&_p]:text-parchment-600 dark:[&_p]:text-zinc-400 [&_p]:leading-relaxed [&_p]:my-1
+  [&_li]:text-[13px] [&_li]:text-parchment-600 dark:[&_li]:text-zinc-400 [&_li]:leading-relaxed
   [&_ul]:my-1 [&_ol]:my-1
   [&_strong]:text-parchment-800 dark:[&_strong]:text-zinc-300 [&_strong]:font-medium
   [&_a]:text-blue-600 dark:[&_a]:text-blue-400/80 [&_a]:no-underline
-  [&_code]:text-[10px] [&_code]:bg-parchment-200 dark:[&_code]:bg-zinc-800/50 [&_code]:px-1 [&_code]:rounded`;
+  [&_code]:text-[12px] [&_code]:bg-parchment-200 dark:[&_code]:bg-zinc-800/50 [&_code]:px-1 [&_code]:rounded`;

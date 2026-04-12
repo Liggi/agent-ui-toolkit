@@ -64,7 +64,7 @@ function SyntaxHighlightedCode({ code, language }: { code: string; language: str
 
   if (!html) {
     return (
-      <pre className={cn('px-3 py-2.5 text-[10px] whitespace-pre-wrap leading-relaxed overflow-x-auto', tk.text.secondary)}>
+      <pre className={cn('px-3 py-2.5 text-[13px] whitespace-pre-wrap break-words leading-relaxed', tk.text.secondary)}>
         {code}
       </pre>
     );
@@ -72,7 +72,7 @@ function SyntaxHighlightedCode({ code, language }: { code: string; language: str
 
   return (
     <div
-      className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:text-[10px] [&_pre]:leading-relaxed [&_pre]:overflow-x-auto [&_code]:!bg-transparent"
+      className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:text-[13px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:!bg-transparent"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

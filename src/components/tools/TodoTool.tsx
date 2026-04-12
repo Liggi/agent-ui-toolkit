@@ -64,7 +64,7 @@ export function TodoTool({ input, result, isWrite }: TodoToolProps): React.JSX.E
           {todos.map((todo, index) => (
             <div key={todo.id || `todo-${index}`} className="flex items-start gap-2">
               <div className="mt-0.5">{getTodoStatusIcon(todo.status)}</div>
-              <span className={`text-[11px] leading-relaxed ${
+              <span className={`text-[13px] leading-relaxed ${
                 todo.status === 'completed'
                   ? `line-through ${tk.text.faint}`
                   : tk.text.primary

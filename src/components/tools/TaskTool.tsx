@@ -126,7 +126,7 @@ export function TaskTool({
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{taskDescription}</span>
           {agentType !== 'general' && agentType !== 'general-purpose' && (
-            <span className={`text-[10px] ${tk.text.faint}`}>{agentType}</span>
+            <span className={`text-[13px] ${tk.text.faint}`}>{agentType}</span>
           )}
         </>
       )}
@@ -145,7 +145,7 @@ export function TaskTool({
               ))}
             </div>
           ) : result ? (
-            <pre className={cn('m-0 px-3 py-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 px-3 py-3 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
               {result}
             </pre>
           ) : null}

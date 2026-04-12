@@ -18,7 +18,7 @@ const CodeHighlight = React.lazy(async () => {
 function CodeHighlightFallback({ code, className = '' }: Pick<LazyCodeHighlightProps, 'code' | 'className'>): React.JSX.Element {
   return (
     <pre className={cn(
-      'm-0 overflow-x-auto px-3 py-2.5 font-mono text-[10px] leading-relaxed',
+      'm-0 px-3 py-2.5 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed',
       tk.codeBg,
       tk.text.secondary,
       className,

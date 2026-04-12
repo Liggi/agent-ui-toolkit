@@ -88,7 +88,7 @@ export function NotionTool({ toolName, input, result }: NotionToolProps): React.
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{summary}</span>
           {hasStructuredData && (
-            <span className={`text-[10px] ${tk.text.faint} flex-shrink-0`}>
+            <span className={`text-[13px] ${tk.text.faint} flex-shrink-0`}>
               {parsed.results.length} result{parsed.results.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -103,7 +103,7 @@ export function NotionTool({ toolName, input, result }: NotionToolProps): React.
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className={cn('text-[11px] font-medium', tk.text.primary)}>
+                        <span className={cn('text-[13px] font-medium', tk.text.primary)}>
                           {page.title || 'Untitled'}
                         </span>
                         {page.type && page.type !== 'page' && (
@@ -117,7 +117,7 @@ export function NotionTool({ toolName, input, result }: NotionToolProps): React.
                         )}
                       </div>
                       {page.highlight && (
-                        <p className={cn('text-[10px] leading-relaxed mt-0.5', tk.text.secondary)}>
+                        <p className={cn('text-[13px] leading-relaxed mt-0.5', tk.text.secondary)}>
                           {page.highlight}
                         </p>
                       )}
@@ -135,7 +135,7 @@ export function NotionTool({ toolName, input, result }: NotionToolProps): React.
               ))}
             </div>
           ) : (
-            <pre className={cn('m-0 px-3 py-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
+            <pre className={cn('m-0 px-3 py-3 font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words', tk.codeBg, tk.text.primary)}>
               {result}
             </pre>
           )}

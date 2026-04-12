@@ -18,7 +18,7 @@ function ShellHighlight({ code }: { code: string }): React.JSX.Element {
 
   if (!html) {
     return (
-      <pre className={`m-0 font-mono text-[10px] whitespace-pre-wrap break-all leading-relaxed ${tk.text.primary}`}>
+      <pre className={`m-0 font-mono text-[13px] whitespace-pre-wrap break-all leading-relaxed ${tk.text.primary}`}>
         {code}
       </pre>
     );
@@ -26,7 +26,7 @@ function ShellHighlight({ code }: { code: string }): React.JSX.Element {
 
   return (
     <div
-      className="[&_pre]:!bg-transparent [&_pre]:m-0 [&_pre]:text-[10px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-all [&_code]:!bg-transparent"
+      className="[&_pre]:!bg-transparent [&_pre]:m-0 [&_pre]:text-[13px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-all [&_code]:!bg-transparent"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -152,7 +152,7 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
           {command && (
             <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5`}>
               <div className="flex gap-2">
-                <span className="text-emerald-400/60 font-mono text-[10px] select-none shrink-0 leading-relaxed">$</span>
+                <span className="text-emerald-400/60 font-mono text-[13px] select-none shrink-0 leading-relaxed">$</span>
                 <ShellHighlight code={command} />
               </div>
             </div>
@@ -160,7 +160,7 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
           {bgOutputPath && taskOutput.content && (
             <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5 max-h-96 overflow-auto`} ref={outputRef}>
               {taskOutput.truncated && (
-                <div className={`text-[10px] ${tk.text.faint} mb-1`}>
+                <div className={`text-[13px] ${tk.text.faint} mb-1`}>
                   … showing last {(MAX_DISPLAY_CHARS / 1000).toFixed(0)}K chars
                 </div>
               )}
@@ -168,7 +168,7 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
             </div>
           )}
           {bgOutputPath && !taskOutput.content && (
-            <div className={`border-t ${tk.separator} px-3 py-2 text-[10px] ${tk.text.muted} ${tk.codeBgSubtle} flex items-center gap-2`}>
+            <div className={`border-t ${tk.separator} px-3 py-2 text-[13px] ${tk.text.muted} ${tk.codeBgSubtle} flex items-center gap-2`}>
               <Loader2 size={12} className="animate-spin" />
               <span>Waiting for output…</span>
             </div>
@@ -179,7 +179,7 @@ export function BashTool({ input, result, isPending = false, fetchBackgroundOutp
             </div>
           )}
           {!bgOutputPath && !result && isPending && (
-            <div className={`border-t ${tk.separator} px-3 py-2 text-[10px] ${tk.text.muted} ${tk.codeBgSubtle}`}>
+            <div className={`border-t ${tk.separator} px-3 py-2 text-[13px] ${tk.text.muted} ${tk.codeBgSubtle}`}>
               Waiting for stdout...
             </div>
           )}

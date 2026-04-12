@@ -47,10 +47,10 @@ export function PlanTool({ input, result, isPendingApproval, priorOutcome = fals
         : 'Implementation plan';
 
   const tableClasses = `
-    [&_table]:w-full [&_table]:text-[11px]
+    [&_table]:w-full [&_table]:text-[13px]
     [&_thead]:bg-stone-100 dark:[&_thead]:bg-zinc-800/20 [&_thead]:border-b ${tk.separator}
     [&_tbody]:divide-y [&_tbody]:divide-stone-200 dark:[&_tbody]:divide-zinc-800/40
-    [&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_th]:text-[10px] [&_th]:text-stone-400 dark:[&_th]:text-zinc-500
+    [&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_th]:text-[13px] [&_th]:text-stone-400 dark:[&_th]:text-zinc-500
     [&_td]:px-3 [&_td]:py-1.5 [&_td]:text-stone-500 dark:[&_td]:text-zinc-400`;
 
   return (
@@ -76,10 +76,10 @@ export function PlanTool({ input, result, isPendingApproval, priorOutcome = fals
 
           {showApprovalButtons && (
             <div className="border-t border-rose-500/20 bg-rose-500/5 px-3 py-2.5 flex items-center gap-3">
-              <span className={`text-[11px] ${tk.text.secondary} flex-1`}>Ready to implement?</span>
+              <span className={`text-[13px] ${tk.text.secondary} flex-1`}>Ready to implement?</span>
               <button
                 onClick={(e) => { e.stopPropagation(); void handleReject(); }}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] border transition-colors
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[13px] border transition-colors
                   ${tk.text.secondary} border-stone-300 dark:border-zinc-700/50
                   hover:border-red-500/30 hover:text-red-400`}
               >
@@ -87,7 +87,7 @@ export function PlanTool({ input, result, isPendingApproval, priorOutcome = fals
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); void handleApprove(); }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] text-rose-400 border border-rose-500/30 hover:bg-rose-500/10 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[13px] text-rose-400 border border-rose-500/30 hover:bg-rose-500/10 transition-colors"
               >
                 <Check size={11} /> Approve
               </button>

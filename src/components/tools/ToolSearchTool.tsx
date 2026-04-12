@@ -50,13 +50,13 @@ export function ToolSearchTool({ input, result }: ToolSearchToolProps): React.JS
             <span className={`text-xs ${tk.text.muted}`}>Tools</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{query}</span>
-          {hasResult && <span className={`text-[10px] ${tk.text.faint}`}>{tools.length} found</span>}
+          {hasResult && <span className={`text-[13px] ${tk.text.faint}`}>{tools.length} found</span>}
         </>
       )}
       content={hasResult ? (
         <div className={`border-t ${tk.separator} px-3 py-2 flex flex-wrap gap-1.5`}>
           {tools.map((tool) => (
-            <span key={tool.raw} className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-violet-500/10 text-[10px]">
+            <span key={tool.raw} className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-violet-500/10 text-[13px]">
               {tool.server && <span className="text-violet-400/50">{tool.server}:</span>}
               <span className="text-violet-300/80">{tool.label}</span>
             </span>
