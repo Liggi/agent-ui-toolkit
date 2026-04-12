@@ -24,6 +24,7 @@ import { ChromeDevToolsTool } from './tools/ChromeDevToolsTool.js';
 import { MonitorTool } from './tools/MonitorTool.js';
 import { SlackTool } from './tools/SlackTool.js';
 import { NotionTool } from './tools/NotionTool.js';
+import { LinearTool } from './tools/LinearTool.js';
 import { TaskManagementTool } from './tools/TaskManagementTool.js';
 import { ToolSearchTool } from './tools/ToolSearchTool.js';
 import { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './tools/TeamTools.js';
@@ -268,6 +269,7 @@ export function ToolContent({
         if (toolName.includes('slack__')) return <SlackTool toolName={toolName} input={toolInput} result={resultContent} />;
         if (toolName.includes('otion__') || toolName.includes('notion__')) return <NotionTool toolName={toolName} input={toolInput} result={resultContent} />;
         if (toolName.includes('chrome_devtools__') || toolName.includes('chrome-devtools__')) return <ChromeDevToolsTool toolName={toolName} input={toolInput} result={resultContent} />;
+        if (toolName.includes('linear__')) return <LinearTool toolName={toolName} input={toolInput} result={resultContent} />;
         return <McpTool toolName={toolName} input={toolInput} result={resultContent} />;
       }
       return <FallbackTool toolName={toolName} input={toolInput} result={resultContent} />;
