@@ -64,6 +64,8 @@ export { PlanTool } from './components/tools/PlanTool.js';
 export { AskUserQuestionTool } from './components/tools/AskUserQuestionTool.js';
 export { FallbackTool } from './components/tools/FallbackTool.js';
 export { McpTool } from './components/tools/McpTool.js';
+export { ChromeDevToolsTool } from './components/tools/ChromeDevToolsTool.js';
+export { MonitorTool } from './components/tools/MonitorTool.js';
 export { SlackTool } from './components/tools/SlackTool.js';
 export { NotionTool } from './components/tools/NotionTool.js';
 export { ToolSearchTool } from './components/tools/ToolSearchTool.js';

@@ -20,6 +20,7 @@ import { PlanTool } from './tools/PlanTool.js';
 import { AskUserQuestionTool } from './tools/AskUserQuestionTool.js';
 import { FallbackTool } from './tools/FallbackTool.js';
 import { McpTool } from './tools/McpTool.js';
+import { ChromeDevToolsTool } from './tools/ChromeDevToolsTool.js';
 import { MonitorTool } from './tools/MonitorTool.js';
 import { SlackTool } from './tools/SlackTool.js';
 import { NotionTool } from './tools/NotionTool.js';
@@ -41,7 +42,7 @@ function ErrorHighlight({ code }: { code: string }): React.JSX.Element {
 
   if (!html) {
     return (
-      <pre className={cn('m-0 px-3 py-2.5 font-mono text-[10px] whitespace-pre-wrap break-words leading-relaxed', tk.text.primary)}>
+      <pre className={cn('m-0 px-3 py-2.5 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed', tk.text.primary)}>
         {code}
       </pre>
     );
@@ -49,15 +50,11 @@ function ErrorHighlight({ code }: { code: string }): React.JSX.Element {
 
   return (
     <div
-      className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:m-0 [&_pre]:text-[10px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:!bg-transparent"
+      className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:m-0 [&_pre]:text-[13px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:!bg-transparent"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }
-
-const ERROR_TOOL_LABELS: Record<string, string> = {
-  WebFetch: 'Fetch', WebSearch: 'Search', MultiEdit: 'Edit', ToolSearch: 'Tools',
-};
 
 function getErrorContext(toolName: string, toolInput: Record<string, unknown>, workingDirectory?: string): string | undefined {
   switch (toolName) {
@@ -79,22 +76,19 @@ function ErrorBlock({ message, toolName, context, isExpanded, onExpandedChange }
   const firstLine = message.split('\n')[0];
   const isMultiLine = message.includes('\n') && message.trim() !== firstLine.trim();
   const headerText = firstLine.slice(0, 80) + (firstLine.length > 80 ? '...' : '');
-  const label = toolName ? (ERROR_TOOL_LABELS[toolName] || toolName) : undefined;
-
   const headerContent = (
     <>
-      <AlertTriangle size={14} className="text-red-600 dark:text-red-400/80 flex-shrink-0" />
-      {label && <span className="text-xs text-red-600/70 dark:text-red-400/60 flex-shrink-0">{label}</span>}
-      {context && <span className={`text-xs ${tk.text.secondary} truncate flex-shrink min-w-0`}>{context}</span>}
-      {context && <span className={`text-xs ${tk.text.faint}`}>|</span>}
-      <span className="text-xs text-red-600/60 dark:text-red-300/70 truncate flex-1">{headerText}</span>
+      <AlertTriangle size={14} className="text-red-700 dark:text-red-400/80 flex-shrink-0" />
+      {context && <span className={`text-xs text-red-800/70 dark:text-red-300/60 truncate flex-shrink min-w-0`}>{context}</span>}
+      {context && <span className={`text-xs text-red-800/40 dark:text-red-400/40`}>|</span>}
+      <span className="text-xs text-red-800/80 dark:text-red-300/70 truncate flex-1">{headerText}</span>
     </>
   );
 
   if (!isMultiLine) {
     return (
       <div className="w-fit max-w-full">
-        <div className="border border-red-500/35 rounded-lg overflow-hidden bg-red-500/10 dark:bg-red-500/5">
+        <div className="border border-red-600/30 rounded-lg overflow-hidden bg-red-500/15 dark:bg-red-500/5">
           <div className="flex items-center gap-2 px-3 py-2">{headerContent}</div>
         </div>
       </div>
@@ -104,11 +98,11 @@ function ErrorBlock({ message, toolName, context, isExpanded, onExpandedChange }
   return (
     <div className="w-fit max-w-full">
       <Collapsible open={isExpanded} onOpenChange={onExpandedChange}>
-        <div className="border border-red-500/35 rounded-lg overflow-hidden bg-red-500/10 dark:bg-red-500/5">
+        <div className="border border-red-600/30 rounded-lg overflow-hidden bg-red-500/15 dark:bg-red-500/5">
           <CollapsibleTrigger className="w-full text-left cursor-pointer select-none">
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-red-500/15 dark:hover:bg-red-500/10 transition-colors">
+            <div className="flex items-center gap-2 px-3 py-2 hover:bg-red-500/20 dark:hover:bg-red-500/10 transition-colors">
               {headerContent}
-              <ChevronDown size={12} className={`text-red-600/60 dark:text-red-400/60 transition-transform duration-150 flex-shrink-0 ${!isExpanded ? '-rotate-90' : ''}`} />
+              <ChevronDown size={12} className={`text-red-700/60 dark:text-red-400/60 transition-transform duration-150 flex-shrink-0 ${!isExpanded ? '-rotate-90' : ''}`} />
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
@@ -210,7 +204,9 @@ export function ToolContent({
           if (toolName.startsWith('mcp__')) {
             const match = toolName.match(/^mcp__[^_]+__(.+)$/);
             const label = match ? match[1].replace(/_/g, ' ') : toolName;
-            return { icon: FileText, label, detail: (toolInput?.path || toolInput?.url || toolInput?.query || toolInput?.pattern || '') as string, iconClass: accent.purple.icon };
+            const isChromeDevTools = toolName.includes('chrome_devtools__') || toolName.includes('chrome-devtools__');
+            const detail = (toolInput?.selector || toolInput?.url || toolInput?.uid || toolInput?.text || toolInput?.path || toolInput?.query || toolInput?.pattern || '') as string;
+            return { icon: isChromeDevTools ? Globe : FileText, label, detail, iconClass: isChromeDevTools ? accent.cyan.icon : accent.purple.icon };
           }
           return { icon: FileText, label: toolName, detail: '', iconClass: tk.text.muted };
         }
@@ -271,6 +267,7 @@ export function ToolContent({
       if (toolName.startsWith('mcp__')) {
         if (toolName.includes('slack__')) return <SlackTool toolName={toolName} input={toolInput} result={resultContent} />;
         if (toolName.includes('otion__') || toolName.includes('notion__')) return <NotionTool toolName={toolName} input={toolInput} result={resultContent} />;
+        if (toolName.includes('chrome_devtools__') || toolName.includes('chrome-devtools__')) return <ChromeDevToolsTool toolName={toolName} input={toolInput} result={resultContent} />;
         return <McpTool toolName={toolName} input={toolInput} result={resultContent} />;
       }
       return <FallbackTool toolName={toolName} input={toolInput} result={resultContent} />;
