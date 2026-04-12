@@ -62,9 +62,11 @@ export function EditTool({ input, result, isMultiEdit = false, workingDirectory 
   const totalChangedLines = totalAdded + totalRemoved;
   const [isExpanded, setIsExpanded] = useState(() => totalChangedLines > 0 && totalChangedLines <= AUTO_EXPAND_THRESHOLD);
 
-  const netDelta = totalAdded - totalRemoved;
-  const deltaText = netDelta > 0 ? `+${netDelta}` : netDelta < 0 ? `${netDelta}` : '~';
-  const deltaColor = netDelta > 0 ? 'text-emerald-400/60' : netDelta < 0 ? 'text-red-400/60' : tk.text.faint;
+  const deltaText = totalAdded > 0 && totalRemoved > 0
+    ? `+${totalAdded} -${totalRemoved}`
+    : totalAdded > 0 ? `+${totalAdded}`
+    : totalRemoved > 0 ? `-${totalRemoved}`
+    : '~';
 
   const renderDiffContent = () => {
     const renderDiffViewer = (oldValue: string, newValue: string): React.JSX.Element => (
@@ -111,7 +113,7 @@ export function EditTool({ input, result, isMultiEdit = false, workingDirectory 
             <span className={`text-xs ${tk.text.muted}`}>Edit</span>
           </div>
           <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>{displayPath}</span>
-          <span className={cn('text-[13px] tabular-nums flex-shrink-0', deltaColor)}>{deltaText}</span>
+          <span className={cn('text-[11px] tabular-nums flex-shrink-0', tk.text.faint)}>{deltaText}</span>
         </>
       )}
       content={(
