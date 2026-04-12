@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { FileText } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { FileText, ImageIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { countLines, formatFilePath } from '../../utils/tool-utils.js';
 import { detectLanguageFromPath } from '../../utils/language-detection.js';
+import { unwrapContentBlocks, findImageBlock, imageBlockToDataUrl } from '../../utils/content-blocks.js';
 import { LazyCodeHighlight } from '../shared/LazyCodeHighlight.js';
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { tk, accent, PROSE_CLASSES } from '../../tokens.js';
@@ -23,15 +24,54 @@ function cleanFileContent(content: string): string {
 const AUTO_EXPAND_THRESHOLD = 5;
 
 export function ReadTool({ input, result, workingDirectory }: ReadToolProps): React.JSX.Element {
+  const filePath = input?.file_path || '';
+  const displayPath = formatFilePath(filePath, workingDirectory);
+
+  // Check if the result contains image content blocks (e.g., reading a PNG file)
+  const imageDataUrl = useMemo(() => {
+    if (!result) return null;
+    const unwrapped = unwrapContentBlocks(result);
+    if (!unwrapped) return null;
+    const imageBlock = findImageBlock(unwrapped);
+    return imageBlock ? imageBlockToDataUrl(imageBlock) : null;
+  }, [result]);
+
   const cleanedContent = result ? cleanFileContent(result) : '';
   const lineCount = countLines(cleanedContent);
   const [isExpanded, setIsExpanded] = useState(() => lineCount > 0 && lineCount <= AUTO_EXPAND_THRESHOLD);
+  const language = detectLanguageFromPath(filePath);
 
   if (!result) return <div />;
 
-  const filePath = input?.file_path || '';
-  const displayPath = formatFilePath(filePath, workingDirectory);
-  const language = detectLanguageFromPath(filePath);
+  if (imageDataUrl) {
+    return (
+      <CollapsibleToolCard
+        isExpanded={true}
+        onExpandedChange={() => {}}
+        cardClassName={accent.blue.card}
+        headerContent={(
+          <>
+            <div className="flex items-center gap-2">
+              <ImageIcon size={14} className={`${accent.blue.icon} flex-shrink-0`} />
+              <span className={`text-xs ${tk.text.muted}`}>Read</span>
+            </div>
+            <span className={`text-xs ${tk.text.secondary} truncate flex-1`}>
+              {displayPath}
+            </span>
+          </>
+        )}
+        content={(
+          <div className={`border-t ${tk.separator} px-3 py-2`}>
+            <img
+              src={imageDataUrl}
+              alt={displayPath}
+              className="rounded border border-stone-200 dark:border-zinc-800/40 max-w-full max-h-96 object-contain"
+            />
+          </div>
+        )}
+      />
+    );
+  }
 
   return (
     <CollapsibleToolCard

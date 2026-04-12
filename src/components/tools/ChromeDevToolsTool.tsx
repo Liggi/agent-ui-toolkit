@@ -3,37 +3,12 @@ import { Chrome, Globe, MousePointer, Monitor, Terminal, Network, Image, CheckCi
 import { CollapsibleToolCard } from '../CollapsibleToolCard.js';
 import { cn } from '../../utils/cn.js';
 import { tk, accent } from '../../tokens.js';
+import { unwrapContentBlocks, imageBlockToDataUrl } from '../../utils/content-blocks.js';
 
 interface ChromeDevToolsToolProps {
   toolName: string;
   input: Record<string, unknown>;
   result: string;
-}
-
-// ── Content block unwrapping ──
-// Results arrive as JSON content block arrays: [{"type":"text","text":"..."},{"type":"image",...}]
-// or single blocks: {"type":"text","text":"..."}
-
-interface ContentBlock { type: string; text?: string; source?: { media_type?: string; data?: string } }
-
-function unwrapContentBlocks(raw: string): { text: string; blocks: ContentBlock[] } | null {
-  let parsed: unknown;
-  try { parsed = JSON.parse(raw); } catch { return null; }
-
-  const blocks: ContentBlock[] = [];
-  if (Array.isArray(parsed)) {
-    for (const item of parsed) {
-      if (item && typeof item === 'object' && 'type' in item) blocks.push(item as ContentBlock);
-    }
-  } else if (parsed && typeof parsed === 'object' && 'type' in (parsed as Record<string, unknown>)) {
-    blocks.push(parsed as ContentBlock);
-  }
-
-  if (blocks.length === 0) return null;
-  if (!blocks.some(b => b.type === 'text' || b.type === 'image')) return null;
-
-  const text = blocks.filter(b => b.type === 'text' && b.text).map(b => b.text!).join('\n');
-  return { text, blocks };
 }
 
 // ── Parsed result types ──
@@ -130,12 +105,9 @@ function parseResult(action: string, raw: string): ParsedResult {
   // Screenshot: check for image content block
   if (action === 'take_screenshot' && unwrapped) {
     const imageBlock = unwrapped.blocks.find(b => b.type === 'image' && b.source?.data);
-    if (imageBlock?.source?.data) {
-      return {
-        kind: 'image',
-        dataUrl: `data:${imageBlock.source.media_type || 'image/png'};base64,${imageBlock.source.data}`,
-        text: text || undefined,
-      };
+    const dataUrl = imageBlock ? imageBlockToDataUrl(imageBlock) : null;
+    if (dataUrl) {
+      return { kind: 'image', dataUrl, text: text || undefined };
     }
   }
 
