@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, AlertTriangle, FileText, Edit, Terminal, Search, List, FileEdit, Loader2, Globe, ExternalLink } from 'lucide-react';
-import { codeToHtml } from 'shiki';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible.js';
-import { useToolkitTheme } from '../context.js';
 import { formatFilePath } from '../utils/tool-utils.js';
 import { cn } from '../utils/cn.js';
 import { tk, accent } from '../tokens.js';
@@ -22,6 +20,7 @@ import { FallbackTool } from './tools/FallbackTool.js';
 import { McpTool } from './tools/McpTool.js';
 import { ChromeDevToolsTool } from './tools/ChromeDevToolsTool.js';
 import { MonitorTool } from './tools/MonitorTool.js';
+import { ScheduleWakeupTool } from './tools/ScheduleWakeupTool.js';
 import { SlackTool } from './tools/SlackTool.js';
 import { NotionTool } from './tools/NotionTool.js';
 import { LinearTool } from './tools/LinearTool.js';
@@ -32,28 +31,10 @@ import { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './tools/TeamToo
 // ---- Error rendering ----
 
 function ErrorHighlight({ code }: { code: string }): React.JSX.Element {
-  const theme = useToolkitTheme();
-  const shikiTheme = theme === 'dark' ? 'github-dark-default' : 'github-light-default';
-  const [html, setHtml] = useState<string | null>(null);
-
-  useEffect(() => {
-    codeToHtml(code, { lang: 'shellscript', theme: shikiTheme })
-      .then(setHtml).catch(() => setHtml(null));
-  }, [code, shikiTheme]);
-
-  if (!html) {
-    return (
-      <pre className={cn('m-0 px-3 py-2.5 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed', tk.text.primary)}>
-        {code}
-      </pre>
-    );
-  }
-
   return (
-    <div
-      className="[&_pre]:!bg-transparent [&_pre]:px-3 [&_pre]:py-2.5 [&_pre]:m-0 [&_pre]:text-[13px] [&_pre]:leading-relaxed [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_code]:!bg-transparent"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <pre className={cn('m-0 px-3 py-2.5 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed', tk.text.primary)}>
+      {code}
+    </pre>
   );
 }
 
@@ -187,6 +168,9 @@ export function ToolContent({
     if (toolName === 'Monitor') {
       return <MonitorTool input={toolInput as { description?: string; command?: string; timeout_ms?: number; persistent?: boolean }} result={resultContent} isPending />;
     }
+    if (toolName === 'ScheduleWakeup') {
+      return <ScheduleWakeupTool input={toolInput as { delaySeconds?: number; prompt?: string; reason?: string }} result={resultContent} isPending />;
+    }
 
     // Generic loading card
     const getToolConfig = () => {
@@ -251,6 +235,7 @@ export function ToolContent({
     case 'Write': return <WriteTool input={toolInput} result={resultContent} workingDirectory={workingDirectory} />;
     case 'Bash': return <BashTool input={toolInput} result={resultContent} fetchBackgroundOutput={fetchBackgroundOutput} />;
     case 'Monitor': return <MonitorTool input={toolInput as { description?: string; command?: string; timeout_ms?: number; persistent?: boolean }} result={resultContent} />;
+    case 'ScheduleWakeup': return <ScheduleWakeupTool input={toolInput as { delaySeconds?: number; prompt?: string; reason?: string }} result={resultContent} />;
     case 'Grep': case 'Glob': case 'LS': return <SearchTool input={toolInput} result={resultContent} toolType={toolName} />;
     case 'TodoRead': case 'TodoWrite': return <TodoTool input={toolInput} result={resultContent} isWrite={toolName === 'TodoWrite'} />;
     case 'WebSearch': case 'WebFetch': return <WebTool input={toolInput} result={resultContent} toolType={toolName} />;

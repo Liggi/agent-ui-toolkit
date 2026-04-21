@@ -48,6 +48,14 @@ function ShellHighlight({ code, lang }: { code: string; lang?: string }): React.
   );
 }
 
+function PlainOutput({ code }: { code: string }): React.JSX.Element {
+  return (
+    <pre className={`m-0 font-mono text-[13px] whitespace-pre-wrap break-words leading-relaxed ${tk.text.primary}`}>
+      {code}
+    </pre>
+  );
+}
+
 interface BashToolProps {
   input: { command?: string; description?: string; run_in_background?: boolean };
   result: string;
@@ -181,7 +189,7 @@ export function BashTool({ input, result: rawResult, isPending = false, fetchBac
                   … showing last {(MAX_DISPLAY_CHARS / 1000).toFixed(0)}K chars
                 </div>
               )}
-              <ShellHighlight code={taskOutput.content} />
+              <PlainOutput code={taskOutput.content} />
             </div>
           )}
           {bgOutputPath && !taskOutput.content && (
@@ -194,7 +202,9 @@ export function BashTool({ input, result: rawResult, isPending = false, fetchBac
             const [formatted, lang] = detectAndFormat(result);
             return (
               <div className={`border-t ${tk.separator} ${tk.codeBg} px-3 py-2.5`}>
-                <ShellHighlight code={formatted} lang={lang} />
+                {lang === 'json'
+                  ? <ShellHighlight code={formatted} lang={lang} />
+                  : <PlainOutput code={formatted} />}
               </div>
             );
           })()}
