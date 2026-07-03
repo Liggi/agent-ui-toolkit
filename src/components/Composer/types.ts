@@ -43,6 +43,7 @@ export interface ComposerRuntimeConfig {
   isStopRequested?: boolean;
   isInitializing?: boolean;
   hasBackgroundTasks?: boolean;
+  scheduledWakeup?: { reason: string; expectedAt: number; delaySecs: number };
   sessionStartTime?: number;
   fileSystemEntries?: FileSystemEntry[];
   onFetchFileSystem?: (directory: string) => Promise<FileSystemEntry[]>;
@@ -61,6 +62,11 @@ export interface ComposerRuntimeConfig {
     cacheReadInputTokens: number;
     contextTokens?: number;
   } | null;
+  /** Model id currently serving the session (from the latest assistant message). */
+  sessionModel?: string | null;
+  /** True when the serving model differs from the session's configured model
+   *  (provider capacity fallback, e.g. Fable → Opus). */
+  sessionModelFallback?: boolean;
 }
 
 export interface ComposerProps {

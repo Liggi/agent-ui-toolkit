@@ -34,6 +34,10 @@ function formatTokenCount(tokens: number): string {
   return `${tokens}`;
 }
 
+function formatModelName(model: string): string {
+  return model.replace(/^claude-/, '').replace(/-\d{8}$/, '');
+}
+
 const ACCEPTED_FILE_TYPES =
   'image/jpeg,image/png,image/gif,image/webp,application/pdf,text/plain,text/markdown,text/csv,text/html,text/css,text/javascript,application/json,application/xml,text/xml,.json,.md,.txt,.csv,.html,.css,.js,.ts,.yaml,.yml';
 
@@ -69,6 +73,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const onFetchCommands = props.runtimeConfig?.onFetchCommands;
   const queuedMessages = props.runtimeConfig?.queuedMessages ?? [];
   const sessionUsage = props.runtimeConfig?.sessionUsage ?? null;
+  const sessionModel = props.runtimeConfig?.sessionModel ?? null;
+  const sessionModelFallback = props.runtimeConfig?.sessionModelFallback ?? false;
 
   // ── Status derivation ──
 
@@ -707,8 +713,30 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                 )}
               </div>
 
-              {/* Right: token usage + queued messages */}
+              {/* Right: model + token usage + queued messages */}
               <div className="flex items-center gap-1 sm:gap-2 min-w-0 shrink">
+                {sessionModel && (
+                  <div
+                    className={cn(
+                      'flex items-center rounded-sm border p-0.5',
+                      sessionModelFallback
+                        ? 'border-amber-500/40 bg-amber-500/10'
+                        : 'border-composer-border/50 bg-composer-surface-elevated/50',
+                    )}
+                    data-testid="session-model"
+                    title={sessionModelFallback ? `Serving model differs from the session's configured model (${sessionModel})` : sessionModel}
+                  >
+                    <span
+                      className={cn(
+                        'px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap',
+                        sessionModelFallback ? 'text-amber-500 dark:text-amber-400' : 'text-composer-muted',
+                      )}
+                      data-model={sessionModel}
+                    >
+                      {formatModelName(sessionModel)}
+                    </span>
+                  </div>
+                )}
                 {sessionUsage && (() => {
                   const tokens = sessionUsage.contextTokens ?? (sessionUsage.inputTokens + sessionUsage.cacheCreationInputTokens + sessionUsage.cacheReadInputTokens);
                   const tokenColor = tokens >= 500_000 ? 'text-red-500 dark:text-red-400' : tokens >= 200_000 ? 'text-amber-500 dark:text-amber-400' : isSessionActive ? 'text-composer-active' : isSessionConnected ? 'text-composer-ready' : 'text-composer-muted';
