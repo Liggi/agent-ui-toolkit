@@ -103,6 +103,15 @@ export interface ComposerProps {
    * Return your menu UI; use onClose to dismiss.
    */
   renderMenu?: (props: { onClose: () => void }) => React.ReactNode;
+  /**
+   * Render prop for extra status-bar content, placed immediately after the
+   * model badge and before the token-usage badge.
+   *
+   * Host apps use this to surface their own compact session state next to the
+   * model. Nothing is rendered when the prop is absent, so consumers that do
+   * not pass it are unaffected.
+   */
+  renderStatusExtra?: () => React.ReactNode;
 }
 
 export interface ComposerRef {

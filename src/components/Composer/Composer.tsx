@@ -38,6 +38,39 @@ function formatModelName(model: string): string {
   return model.replace(/^claude-/, '').replace(/-\d{8}$/, '');
 }
 
+// Textarea auto-grow cap: 3 rows of text.
+// text-sm (14px) x leading-relaxed (1.625) = 22.75px per row; py-2 adds 16px of
+// vertical padding. 3 x 22.75 + 16 = 84.25 -> 85 avoids sub-pixel clipping of row 3.
+// Single source of truth: used by the JS clamp AND applied inline as max-height,
+// so there is no Tailwind max-h class to drift out of sync.
+const TEXTAREA_MAX_HEIGHT_PX = 85;
+
+/*
+ * Touch targets.
+ *
+ * The composer's icon buttons are deliberately 32px so the bar stays dense, but
+ * 32px is below the 44x44 minimum in Apple's HIG and WCAG 2.5.5. These classes
+ * keep the 32px visual box and grow only the *tappable* area, using a centred
+ * absolutely-positioned pseudo-element. Because it is out of flow, nothing
+ * reflows — the button occupies exactly the same space it did before.
+ *
+ * `w-full` + `min-w-11` means "at least 44px wide, but never narrower than the
+ * button itself", so it also fits the wider Stop button in its "Stopping" state.
+ */
+const TOUCH_TARGET_44 =
+  "relative before:absolute before:top-1/2 before:left-1/2 before:h-11 before:w-full before:min-w-11 " +
+  "before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']";
+
+/*
+ * Smaller variant for the attachment chip's remove button. The chip is only
+ * ~26px tall, so a 44px target would spill past the chip strip and turn taps on
+ * the textarea below it into "remove attachment" — a destructive misfire. 32x32
+ * quadruples the tappable area while staying inside the strip.
+ */
+const TOUCH_TARGET_32 =
+  "relative before:absolute before:top-1/2 before:left-1/2 before:h-8 before:w-8 " +
+  "before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']";
+
 const ACCEPTED_FILE_TYPES =
   'image/jpeg,image/png,image/gif,image/webp,application/pdf,text/plain,text/markdown,text/csv,text/html,text/css,text/javascript,application/json,application/xml,text/xml,.json,.md,.txt,.csv,.html,.css,.js,.ts,.yaml,.yml';
 
@@ -60,6 +93,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const workingDirectory = props.workingDirectory ?? '';
   const onStop = props.permissionConfig?.onStop;
   const onInterrupt = props.permissionConfig?.onInterrupt;
+  const renderStatusExtra = props.renderStatusExtra;
 
   const isSessionActive = props.runtimeConfig?.isSessionActive ?? false;
   const isSessionConnected = props.runtimeConfig?.isSessionConnected ?? isSessionActive;
@@ -648,8 +682,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
-      const maxHeight = Math.floor(window.innerHeight * 0.8);
-      textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+      textarea.style.height = `${Math.min(textarea.scrollHeight, TEXTAREA_MAX_HEIGHT_PX)}px`;
     }
   };
 
@@ -907,6 +940,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     </span>
                   </div>
                 ) : null}
+                {/* Host-app status content, adjacent to the model badge. */}
+                {renderStatusExtra?.()}
                 {sessionUsage && (() => {
                   const tokens = sessionUsage.contextTokens ?? (sessionUsage.inputTokens + sessionUsage.cacheCreationInputTokens + sessionUsage.cacheReadInputTokens);
                   const tokenColor = tokens >= 500_000 ? 'text-red-500 dark:text-red-400' : tokens >= 200_000 ? 'text-amber-500 dark:text-amber-400' : isSessionActive ? 'text-composer-active' : isSessionConnected ? 'text-composer-ready' : 'text-composer-muted';
@@ -989,7 +1024,11 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     <button
                       type="button"
                       onClick={() => removeAttachment(att.id)}
-                      className="ml-1 p-0.5 rounded hover:bg-composer-danger/20 text-composer-text-secondary hover:text-composer-danger transition-colors"
+                      aria-label={`Remove ${att.name}`}
+                      className={cn(
+                        TOUCH_TARGET_32,
+                        'ml-1 p-0.5 rounded hover:bg-composer-danger/20 text-composer-text-secondary hover:text-composer-danger transition-colors',
+                      )}
                     >
                       <X size={12} />
                     </button>
@@ -1008,7 +1047,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                 <textarea
                   ref={textareaRef}
                   data-testid="composer-input"
-                  className="max-h-[80vh] w-full border-none bg-transparent text-composer-text leading-relaxed resize-none outline-none overflow-y-auto min-h-[40px] py-2 pl-12 pr-28 text-sm tracking-[0.01em] placeholder:text-composer-text-faint"
+                  className="w-full border-none bg-transparent text-composer-text leading-relaxed resize-none outline-none overflow-y-auto min-h-[40px] py-2 pl-12 pr-28 text-sm tracking-[0.01em] placeholder:text-composer-text-faint"
+                  style={{ maxHeight: TEXTAREA_MAX_HEIGHT_PX }}
                   placeholder={placeholder}
                   value={value}
                   onChange={handleTextChange}
@@ -1028,6 +1068,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     disabled={disabled}
                     aria-label="Add attachment"
                     className={cn(
+                      TOUCH_TARGET_44,
                       'flex h-8 w-8 items-center justify-center rounded-sm border border-composer-active dark:border-composer-active/30 text-composer-active transition-all duration-100 hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/5 disabled:opacity-45 disabled:cursor-not-allowed',
                     )}
                   >
@@ -1047,6 +1088,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                       onClick={() => setIsMenuOpen(!isMenuOpen)}
                       title="Menu"
                       className={cn(
+                        TOUCH_TARGET_44,
                         'flex items-center justify-center px-2 h-8 rounded-sm border transition-all duration-100 cursor-pointer',
                         isMenuOpen
                           ? 'bg-composer-surface-elevated border-composer-border text-composer-text-secondary'
@@ -1068,6 +1110,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     onClick={handleSubmit}
                     aria-label="Send message"
                     className={cn(
+                      TOUCH_TARGET_44,
                       'flex h-8 w-8 items-center justify-center rounded-sm border transition-all duration-100',
                       (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
                         ? 'border-composer-border text-composer-text-faint cursor-not-allowed'
@@ -1082,6 +1125,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                       key="stop"
                       type="button"
                       className={cn(
+                        TOUCH_TARGET_44,
                         'relative h-8 flex items-center justify-center gap-1 rounded-sm border text-[10px] font-semibold uppercase tracking-wider transition-all duration-100',
                         isStopRequested ? 'px-2' : 'w-8',
                         isStopRequested
