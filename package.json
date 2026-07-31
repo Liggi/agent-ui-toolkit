@@ -1,6 +1,12 @@
 {
   "name": "@liggi/agent-ui-toolkit",
-  "version": "0.1.1",
+  "version": "0.2.0",
+  "description": "React components for rendering Claude Code tool calls: diffs, terminals, task trees, MCP tools. Themeable, with composer.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liggi/agent-ui-toolkit.git"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
