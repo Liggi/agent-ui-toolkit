@@ -69,6 +69,8 @@ export { MonitorTool } from './components/tools/MonitorTool.js';
 export { SlackTool } from './components/tools/SlackTool.js';
 export { NotionTool } from './components/tools/NotionTool.js';
 export { ToolSearchTool } from './components/tools/ToolSearchTool.js';
+export { LinearTool } from './components/tools/LinearTool.js';
+export { ScheduleWakeupTool } from './components/tools/ScheduleWakeupTool.js';
 export { TeamCreateTool, SendMessageTool, TeamDeleteTool } from './components/tools/TeamTools.js';
 
 // ── UI primitives (for building custom tool cards) ──
