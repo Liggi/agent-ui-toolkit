@@ -207,7 +207,7 @@ agent-ui-harness   (protocol: events, classify, group, extract)
        ↓
 agent-ui-toolkit   (components: tool cards, groups, result renderers)
        ↓
-lattice / analyst  (product: layout, state, themes, API integration)
+your app           (product: layout, state, themes, API integration)
 ```
 
 The layer below is [`@liggi/agent-ui-harness`](https://www.npmjs.com/package/@liggi/agent-ui-harness) — it turns a raw Claude Code event stream into classified, grouped tool calls. This package renders them. Product concerns (team color lookup, plan approval, background output fetching) are inverted into the props and context described above, so nothing product-specific lives here.
