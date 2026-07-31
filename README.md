@@ -2,6 +2,8 @@
 
 React components for rendering Claude Code tool calls — diffs, file reads, bash output, task trees, MCP tools — with theming and a composer.
 
+A coding agent's output is mostly tool calls, and rendered raw they are unreadable JSON. This package is the twenty-odd renderers you would otherwise build by hand — one shared card system, an error boundary around every renderer, and an input composer to drive the session.
+
 Live component gallery: **https://liggi.github.io/agent-ui-toolkit/** (deploys from `main`).
 
 ```bash
@@ -21,7 +23,7 @@ Import the stylesheet once, anywhere in your app. Works in any React app — Vit
 import '@liggi/agent-ui-toolkit/styles.css';
 ```
 
-This ships every utility class the components use, plus the theme tokens. It deliberately **does not** include Tailwind's preflight reset, so it will not touch your app's own element styling. See [Precompiled CSS: what's in it](#precompiled-css-whats-in-it).
+This ships every utility class the components use, the theme tokens, and the typography styles markdown prose needs. It deliberately does **not** include Tailwind's preflight reset, so it will never touch your app's own element styling — but if your app has no CSS reset of its own, bring one; this file won't provide it.
 
 ### Mode B — you already use Tailwind v4
 
@@ -139,7 +141,7 @@ The building blocks are exported so custom cards match the built-ins: `Collapsib
 
 ## Theming
 
-**Dark mode** is driven by a `dark` class on an ancestor element. Set it on a wrapper and pass the matching `theme` to `ToolkitProvider` — the class drives the Tailwind `dark:` variants, and `theme` selects the Shiki syntax-highlighting theme.
+**Dark mode** is driven by a `dark` class on an ancestor element. Set it on a wrapper and pass the matching `theme` to `ToolkitProvider` — the class drives the Tailwind `dark:` variants, and `theme` selects the Shiki syntax-highlighting theme. The shipped stylesheet wires `dark:` to the class, not the OS `prefers-color-scheme`, so your app's theme toggle is what counts; in Mode B, `dark:` behaves however your own Tailwind config says.
 
 ```tsx
 <div className={isDark ? 'dark' : ''}>
@@ -176,6 +178,8 @@ The `.dark` class overrides the surface, border and text values; the five status
 
 The light-mode neutrals (`--color-parchment-50` … `--color-parchment-950`) are overridable the same way.
 
+One known gap: a few `scrollbar-*` classes in the tokens reference a Tailwind plugin that isn't shipped — they're inert in both modes, and scrollbars fall back to browser defaults.
+
 ## Composer
 
 `Composer` is an input surface for driving an agent session — text entry, file autocomplete, slash commands, attachments, and a status bar. Props are grouped:
@@ -187,18 +191,6 @@ The light-mode neutrals (`--color-parchment-50` … `--color-parchment-950`) are
 - **`renderMenu`** — render prop for the menu area below the input, called with `{ onClose }` when `showMenu` is on.
 
 `ComposerRef` exposes `focusInput()`.
-
-## Precompiled CSS: what's in it
-
-`dist/styles/toolkit.css` is compiled by the Tailwind v4 CLI from `src/styles/toolkit.dist.css`. Three choices are worth knowing about:
-
-- **No preflight.** Tailwind's preflight is a global reset — it zeroes margins everywhere, strips list styling from every `ul`/`ol`, and sets `display: block` on every `img`. A component library has no business doing that to its host, so the build imports only the `theme` and `utilities` layers. If your app has no CSS reset of its own, you'll want one; this file won't provide it.
-- **Class-based dark mode.** Tailwind v4's stock `dark:` variant follows `prefers-color-scheme`, which would make the shipped stylesheet track the OS and ignore your app's theme toggle. The build overrides it so `dark:` responds to the `.dark` class instead. In Mode B, the `dark:` behaviour is whatever your own Tailwind config says.
-- **Tokens are baked in but stay overridable.** The parchment and composer palettes ship as defaults so light mode isn't blank out of the box. Emitted utilities reference them via `var()`, so redefining the properties on `:root` re-themes the toolkit without recompiling.
-
-The typography plugin is included, so `PROSE_CLASSES` and markdown rendering work in both modes.
-
-One known gap: `tokens.ts` references `scrollbar-thin` / `scrollbar-thumb-*` classes from the `tailwind-scrollbar` plugin, which isn't a dependency. Those classes are inert in both modes — scrollbars fall back to browser defaults.
 
 ## Where it fits
 
