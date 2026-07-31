@@ -21,6 +21,8 @@ export interface ComposerCoreConfig {
     options?: {
       workingDirectory?: string;
       attachments?: AttachmentBlock[];
+      model?: string;
+      effort?: string;
     },
   ) => void | Promise<void>;
   placeholder?: string;
@@ -67,6 +69,21 @@ export interface ComposerRuntimeConfig {
   /** True when the serving model differs from the session's configured model
    *  (provider capacity fallback, e.g. Fable → Opus). */
   sessionModelFallback?: boolean;
+  /** Models the user may pick from. When non-empty and onModelChange is
+   *  provided, the model badge becomes an interactive selector. */
+  availableModels?: Array<{ id: string; label: string; description?: string; isDefault?: boolean }>;
+  /** The model id the user has chosen; null/undefined means "server default". */
+  selectedModel?: string | null;
+  /** Called when the user picks a model; null means "revert to default". */
+  onModelChange?: (modelId: string | null) => void;
+  /** Reasoning-effort levels the user may pick from (a second selectable
+   *  dimension for providers that expose it). When non-empty and onModelChange
+   *  is provided, the menu renders a second "Reasoning" radio section. */
+  availableEfforts?: Array<{ id: string; label: string; description?: string; isDefault?: boolean }>;
+  /** The effort id the user has chosen; null/undefined means "default". */
+  selectedEffort?: string | null;
+  /** Called when the user picks an effort; null means "revert to default". */
+  onEffortChange?: (effortId: string | null) => void;
 }
 
 export interface ComposerProps {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Send, Loader2, Square, X, FileText, ChevronUp, Paperclip, Image, Plus } from 'lucide-react';
+import { Send, Loader2, Square, X, FileText, ChevronUp, ChevronDown, Paperclip, Image, Plus, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -75,6 +75,29 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const sessionUsage = props.runtimeConfig?.sessionUsage ?? null;
   const sessionModel = props.runtimeConfig?.sessionModel ?? null;
   const sessionModelFallback = props.runtimeConfig?.sessionModelFallback ?? false;
+  const availableModels = props.runtimeConfig?.availableModels ?? [];
+  const selectedModel = props.runtimeConfig?.selectedModel ?? null;
+  const onModelChange = props.runtimeConfig?.onModelChange;
+  const isModelSelectorEnabled = availableModels.length > 0 && !!onModelChange;
+  const defaultModel = availableModels.find((m) => m.isDefault);
+  const effectiveModel = selectedModel
+    ? availableModels.find((m) => m.id === selectedModel)
+    : defaultModel;
+
+  const availableEfforts = props.runtimeConfig?.availableEfforts ?? [];
+  const selectedEffort = props.runtimeConfig?.selectedEffort ?? null;
+  const onEffortChange = props.runtimeConfig?.onEffortChange;
+  const effortProvided = availableEfforts.length > 0;
+  const isEffortSelectorEnabled = effortProvided && isModelSelectorEnabled;
+  const defaultEffort = availableEfforts.find((e) => e.isDefault);
+  const effectiveEffort = selectedEffort
+    ? availableEfforts.find((e) => e.id === selectedEffort)
+    : defaultEffort;
+  // Show the effort label on the badge only when a non-default effort is active.
+  const badgeEffortLabel =
+    isEffortSelectorEnabled && effectiveEffort && !effectiveEffort.isDefault
+      ? effectiveEffort.label
+      : null;
 
   // ── Status derivation ──
 
@@ -164,6 +187,11 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [queueDialogOpen, setQueueDialogOpen] = useState(false);
+  const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
+  const modelMenuRef = useRef<HTMLDivElement>(null);
+  const modelMenuListRef = useRef<HTMLDivElement>(null);
+  const modelTriggerRef = useRef<HTMLButtonElement>(null);
+  const [modelMenuFocusIndex, setModelMenuFocusIndex] = useState(-1);
 
   // ── Elapsed time ──
 
@@ -201,6 +229,103 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
     const interval = setInterval(updateElapsed, 1000);
     return () => clearInterval(interval);
   }, [isSessionAlive, sessionStartTime]);
+
+  // ── Model selector dismissal ──
+
+  const closeModelMenu = useCallback((returnFocus: boolean) => {
+    setIsModelMenuOpen(false);
+    setModelMenuFocusIndex(-1);
+    if (returnFocus) modelTriggerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!isModelMenuOpen) return;
+    const handlePointer = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (
+        modelMenuRef.current?.contains(target) ||
+        modelMenuListRef.current?.contains(target)
+      ) {
+        return;
+      }
+      closeModelMenu(false);
+    };
+    document.addEventListener('pointerdown', handlePointer);
+    return () => document.removeEventListener('pointerdown', handlePointer);
+  }, [isModelMenuOpen, closeModelMenu]);
+
+  // Flat list of every selectable row across both sections, so roving focus and
+  // keyboard nav span "Model" + "Reasoning" as one list. Effort rows are only
+  // present when the effort props are provided.
+  const menuRows: Array<
+    | { kind: 'model'; id: string; isDefault?: boolean }
+    | { kind: 'effort'; id: string; isDefault?: boolean }
+  > = [
+    ...availableModels.map((m) => ({ kind: 'model' as const, id: m.id, isDefault: m.isDefault })),
+    ...(isEffortSelectorEnabled
+      ? availableEfforts.map((eff) => ({ kind: 'effort' as const, id: eff.id, isDefault: eff.isDefault }))
+      : []),
+  ];
+
+  // Activate a row: choosing a model closes the menu (returning focus to the
+  // trigger); choosing an effort keeps the menu open (users often set both).
+  const activateMenuRow = useCallback(
+    (row: { kind: 'model' | 'effort'; id: string; isDefault?: boolean }) => {
+      if (row.kind === 'model') {
+        onModelChange?.(row.isDefault ? null : row.id);
+        closeModelMenu(true);
+      } else {
+        onEffortChange?.(row.isDefault ? null : row.id);
+      }
+    },
+    [onModelChange, onEffortChange, closeModelMenu],
+  );
+
+  // Open the menu focused on the effective model's row.
+  useEffect(() => {
+    if (!isModelMenuOpen) return;
+    const idx = availableModels.findIndex((m) => m.id === (effectiveModel?.id ?? null));
+    setModelMenuFocusIndex(idx >= 0 ? idx : 0);
+  }, [isModelMenuOpen, availableModels, effectiveModel]);
+
+  // Move DOM focus onto the active row as it changes.
+  useEffect(() => {
+    if (!isModelMenuOpen || modelMenuFocusIndex < 0 || !modelMenuListRef.current) return;
+    const items = modelMenuListRef.current.querySelectorAll<HTMLElement>('[data-menu-option]');
+    items[modelMenuFocusIndex]?.focus();
+  }, [isModelMenuOpen, modelMenuFocusIndex]);
+
+  const handleModelMenuKeyDown = (e: React.KeyboardEvent) => {
+    const count = menuRows.length;
+    if (count === 0) return;
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setModelMenuFocusIndex((i) => (i < 0 ? 0 : (i + 1) % count));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setModelMenuFocusIndex((i) => (i <= 0 ? count - 1 : i - 1));
+        break;
+      case 'Home':
+        e.preventDefault();
+        setModelMenuFocusIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        setModelMenuFocusIndex(count - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (modelMenuFocusIndex >= 0) activateMenuRow(menuRows[modelMenuFocusIndex]);
+        break;
+      case 'Escape':
+        e.preventDefault();
+        closeModelMenu(true);
+        break;
+    }
+  };
 
   // ── Ref ──
 
@@ -425,7 +550,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   // ── Submit ──
 
   const handleSubmit = () => {
-    const trimmedValue = value.trim();
+    const currentValue = textareaRef.current?.value ?? value;
+    const trimmedValue = currentValue.trim();
     if (!trimmedValue && !hasAttachments) return;
     if (isProcessingAttachments) return;
 
@@ -434,7 +560,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
     // Save draft backup before clearing
     const backupKey = `${draftStorageKey}-backup`;
     try {
-      localStorage.setItem(backupKey, value);
+      localStorage.setItem(backupKey, currentValue);
     } catch {
       /* quota exceeded */
     }
@@ -442,6 +568,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
     void onSubmit(trimmedValue, {
       workingDirectory: workingDirectory || undefined,
       attachments: attachmentBlocks,
+      ...(isModelSelectorEnabled ? { model: selectedModel ?? undefined } : {}),
+      ...(effortProvided ? { effort: selectedEffort ?? undefined } : {}),
     });
 
     setValue('');
@@ -583,8 +711,8 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
     : isSessionActive
       ? { border: 'border-composer-active dark:border-composer-active/60', bg: 'bg-composer-active/30 dark:bg-composer-active/10', borderInner: 'border-composer-active/60 dark:border-composer-active/25', text: 'text-composer-active', textDim: 'text-composer-active dark:text-composer-active/70' }
       : isSessionConnected
-        ? { border: 'border-composer-ready dark:border-composer-ready/40', bg: 'bg-composer-ready/25 dark:bg-composer-ready/5', borderInner: 'border-composer-ready/50 dark:border-composer-ready/15', text: 'text-composer-ready', textDim: 'text-composer-ready dark:text-composer-ready/60' }
-        : { border: 'border-composer-border', bg: 'bg-composer-muted/15 dark:bg-composer-muted/5', borderInner: 'border-composer-border/50', text: 'text-composer-muted', textDim: 'text-composer-muted/70 dark:text-composer-muted/40' };
+          ? { border: 'border-composer-ready dark:border-composer-ready/40', bg: 'bg-composer-ready/25 dark:bg-composer-ready/5', borderInner: 'border-composer-ready/50 dark:border-composer-ready/15', text: 'text-composer-ready', textDim: 'text-composer-ready dark:text-composer-ready/60' }
+          : { border: 'border-composer-border', bg: 'bg-composer-muted/15 dark:bg-composer-muted/5', borderInner: 'border-composer-border/50', text: 'text-composer-muted', textDim: 'text-composer-muted/70 dark:text-composer-muted/40' };
 
   // ── Render ──
 
@@ -715,7 +843,49 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
 
               {/* Right: model + token usage + queued messages */}
               <div className="flex items-center gap-1 sm:gap-2 min-w-0 shrink">
-                {sessionModel && (
+                {isModelSelectorEnabled ? (
+                  <div className="relative" ref={modelMenuRef} data-testid="model-selector">
+                    <button
+                      ref={modelTriggerRef}
+                      type="button"
+                      onClick={() => (isModelMenuOpen ? closeModelMenu(false) : setIsModelMenuOpen(true))}
+                      className={cn(
+                        'composer-model-badge flex items-center rounded-sm border p-0.5 transition-colors cursor-pointer',
+                        sessionModelFallback
+                          ? 'border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20'
+                          : 'border-composer-border/50 bg-composer-surface-elevated/50 hover:border-composer-border hover:bg-composer-surface-elevated hover:text-composer-text',
+                      )}
+                      data-testid="session-model"
+                      aria-haspopup="menu"
+                      aria-expanded={isModelMenuOpen}
+                      title={sessionModelFallback && sessionModel ? `Select model. Serving model differs from the session's configured model (${sessionModel})` : 'Select model'}
+                    >
+                      <span
+                        className={cn(
+                          'pl-1.5 sm:pl-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap',
+                          sessionModelFallback ? 'text-amber-500 dark:text-amber-400' : 'text-composer-muted',
+                        )}
+                        data-model={selectedModel ?? undefined}
+                        data-effort={selectedEffort ?? undefined}
+                      >
+                        {effectiveModel?.label ?? (sessionModel ? formatModelName(sessionModel) : 'Model')}
+                        {badgeEffortLabel && (
+                          <span className="text-composer-muted"> · {badgeEffortLabel}</span>
+                        )}
+                        {!selectedModel && defaultModel && (
+                          <span className="ml-1 text-composer-text-faint normal-case font-normal">default</span>
+                        )}
+                      </span>
+                      <ChevronDown
+                        size={10}
+                        className={cn(
+                          'mr-1 text-composer-muted transition-transform',
+                          isModelMenuOpen && 'rotate-180',
+                        )}
+                      />
+                    </button>
+                  </div>
+                ) : sessionModel ? (
                   <div
                     className={cn(
                       'flex items-center rounded-sm border p-0.5',
@@ -736,7 +906,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                       {formatModelName(sessionModel)}
                     </span>
                   </div>
-                )}
+                ) : null}
                 {sessionUsage && (() => {
                   const tokens = sessionUsage.contextTokens ?? (sessionUsage.inputTokens + sessionUsage.cacheCreationInputTokens + sessionUsage.cacheReadInputTokens);
                   const tokenColor = tokens >= 500_000 ? 'text-red-500 dark:text-red-400' : tokens >= 200_000 ? 'text-amber-500 dark:text-amber-400' : isSessionActive ? 'text-composer-active' : isSessionConnected ? 'text-composer-ready' : 'text-composer-muted';
@@ -857,7 +1027,9 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     onClick={() => fileInputRef.current?.click()}
                     disabled={disabled}
                     aria-label="Add attachment"
-                    className="flex h-8 w-8 items-center justify-center rounded-sm border border-composer-active dark:border-composer-active/30 text-composer-active transition-all duration-100 hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/5 disabled:opacity-45 disabled:cursor-not-allowed"
+                    className={cn(
+                      'flex h-8 w-8 items-center justify-center rounded-sm border border-composer-active dark:border-composer-active/30 text-composer-active transition-all duration-100 hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/5 disabled:opacity-45 disabled:cursor-not-allowed',
+                    )}
                   >
                     <Plus size={14} />
                   </button>
@@ -866,88 +1038,71 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
 
               {/* Action buttons */}
               <div className="absolute flex items-center justify-center gap-2 right-1.5 bottom-1.5">
-                {isSessionActive || isSessionConnected ? (
-                  <div className="flex items-center gap-1.5">
-                    {/* Send button */}
+                <div className="flex items-center gap-1.5">
+                  {/* Menu toggle */}
+                  {!isSessionActive && !isSessionConnected && showMenu && (
                     <button
+                      key="menu"
                       type="button"
-                      data-testid="send-button"
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      title="Menu"
                       className={cn(
-                        'h-8 w-8 flex items-center justify-center rounded-sm border transition-all duration-100',
-                        value.trim() || hasAttachments
-                          ? 'border-composer-active dark:border-composer-active/40 text-composer-active hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/10'
-                          : 'border-composer-border text-composer-text-faint cursor-not-allowed',
-                      )}
-                      disabled={
-                        (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
-                      }
-                      onClick={handleSubmit}
-                      aria-label="Send message"
-                    >
-                      <Send size={14} />
-                    </button>
-                    {/* Stop button */}
-                    {(isSessionActive || isStopRequested) && (
-                      <button
-                        type="button"
-                        className={cn(
-                          'relative h-8 px-2 flex items-center gap-1 rounded-sm border text-[10px] font-semibold uppercase tracking-wider transition-all duration-100',
-                          isStopRequested
-                            ? 'border-composer-caution/50 text-composer-caution bg-composer-caution/10'
-                            : 'border-composer-danger/30 text-composer-danger hover:border-composer-danger hover:bg-composer-danger/5',
-                        )}
-                        onClick={() => onStop?.()}
-                        data-testid="stop-button"
-                        aria-label={isStopRequested ? 'Stop requested' : 'Stop session'}
-                      >
-                        {isStopRequested ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Square size={14} />
-                        )}
-                        <span className="hidden sm:inline">
-                          {isStopRequested ? 'Stopping' : 'Stop'}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    {/* Menu toggle */}
-                    {showMenu && (
-                      <button
-                        type="button"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        title="Menu"
-                        className={cn(
-                          'flex items-center justify-center px-2 h-8 rounded-sm border transition-all duration-100 cursor-pointer',
-                          isMenuOpen
-                            ? 'bg-composer-surface-elevated border-composer-border text-composer-text-secondary'
-                            : 'border-composer-border text-composer-text-faint hover:border-composer-text-faint hover:text-composer-text-secondary hover:bg-composer-surface-elevated/50',
-                        )}
-                      >
-                        <ChevronUp size={14} />
-                      </button>
-                    )}
-                    {/* Send button */}
-                    <button
-                      type="button"
-                      data-testid="send-button"
-                      disabled={
-                        (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
-                      }
-                      onClick={handleSubmit}
-                      className={cn(
-                        'flex items-center justify-center h-8 w-8 rounded-sm border transition-all duration-100 cursor-pointer',
-                        (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
-                          ? 'border-composer-border text-composer-text-faint cursor-not-allowed'
-                          : 'border-composer-active dark:border-composer-active/50 text-composer-active hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/10',
+                        'flex items-center justify-center px-2 h-8 rounded-sm border transition-all duration-100 cursor-pointer',
+                        isMenuOpen
+                          ? 'bg-composer-surface-elevated border-composer-border text-composer-text-secondary'
+                          : 'border-composer-border text-composer-text-faint hover:border-composer-text-faint hover:text-composer-text-secondary hover:bg-composer-surface-elevated/50',
                       )}
                     >
-                      <Send size={14} />
+                      <ChevronUp size={14} />
                     </button>
-                  </div>
-                )}
+                  )}
+                  {/* Send button */}
+                  <button
+                    key="send"
+                    type="button"
+                    data-testid="send-button"
+                    disabled={disabled || isProcessingAttachments}
+                    aria-disabled={
+                      (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
+                    }
+                    onClick={handleSubmit}
+                    aria-label="Send message"
+                    className={cn(
+                      'flex h-8 w-8 items-center justify-center rounded-sm border transition-all duration-100',
+                      (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
+                        ? 'border-composer-border text-composer-text-faint cursor-not-allowed'
+                        : 'border-composer-active dark:border-composer-active/50 text-composer-active hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/10 cursor-pointer',
+                    )}
+                  >
+                    <Send size={14} />
+                  </button>
+                  {/* Stop button */}
+                  {(isSessionActive || isStopRequested) && (
+                    <button
+                      key="stop"
+                      type="button"
+                      className={cn(
+                        'relative h-8 flex items-center justify-center gap-1 rounded-sm border text-[10px] font-semibold uppercase tracking-wider transition-all duration-100',
+                        isStopRequested ? 'px-2' : 'w-8',
+                        isStopRequested
+                          ? 'border-composer-caution/50 text-composer-caution bg-composer-caution/10'
+                          : 'border-composer-danger/30 text-composer-danger hover:border-composer-danger hover:bg-composer-danger/5',
+                      )}
+                      onClick={() => onStop?.()}
+                      data-testid="stop-button"
+                      aria-label={isStopRequested ? 'Stop requested' : 'Stop session'}
+                    >
+                      {isStopRequested ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Square size={14} />
+                      )}
+                      {isStopRequested && (
+                        <span className="hidden sm:inline">Stopping</span>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -984,6 +1139,97 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
             </Dialog>
           </div>
         </div>
+
+        {/* Model selector menu — rendered at the root wrapper so it escapes the
+            main card's `overflow-hidden` clipping, mirroring the autocomplete
+            dropdown's escape pattern. Anchors to the trigger position (top-right). */}
+        {isModelSelectorEnabled && isModelMenuOpen && (() => {
+          // Semantic class hooks for product skinning (the toolkit's established
+          // inversion pattern — consumers restyle these via CSS, not by forking):
+          //   composer-model-menu              — the popover panel
+          //   composer-model-menu-section      — a section header ("Model"/"Reasoning")
+          //   composer-model-menu-item         — a selectable row
+          //   composer-model-menu-item-label   — the row's primary label
+          //   composer-model-menu-item-description — the row's secondary description
+          //   composer-model-badge             — the interactive trigger badge (above)
+          const renderRow = (
+            row: { id: string; label: string; description?: string; isDefault?: boolean },
+            kind: 'model' | 'effort',
+            flatIndex: number,
+            isChecked: boolean,
+          ) => (
+            <button
+              key={row.id}
+              type="button"
+              role="menuitemradio"
+              aria-checked={isChecked}
+              data-menu-option
+              tabIndex={flatIndex === modelMenuFocusIndex ? 0 : -1}
+              onClick={() => activateMenuRow({ kind, id: row.id, isDefault: row.isDefault })}
+              className={cn(
+                'composer-model-menu-item flex w-full items-start gap-2 rounded-sm px-2 py-1 text-left transition-colors cursor-pointer outline-none',
+                'hover:bg-composer-active/5 focus:bg-composer-active/5 focus-visible:bg-composer-active/5',
+                isChecked && 'bg-composer-active/10',
+              )}
+              data-testid={`${kind}-option-${row.id}`}
+            >
+              <span className="mt-px w-3.5 shrink-0">
+                {isChecked && <Check size={14} className="text-composer-active" />}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1.5">
+                  <span className="composer-model-menu-item-label text-[10px] font-semibold uppercase tracking-wider text-composer-text truncate">
+                    {row.label}
+                  </span>
+                  {row.isDefault && (
+                    <span className="text-[8px] uppercase tracking-wider text-composer-text-faint border border-composer-border/60 rounded-sm px-1 py-px whitespace-nowrap">
+                      server default
+                    </span>
+                  )}
+                </span>
+                {row.description && (
+                  <span className="composer-model-menu-item-description block text-[10px] leading-tight text-composer-text-faint normal-case mt-0.5">
+                    {row.description}
+                  </span>
+                )}
+              </span>
+            </button>
+          );
+
+          const sectionHeader = (label: string) => (
+            <div className="composer-model-menu-section px-2 pt-1 pb-0.5 text-[8px] font-semibold uppercase tracking-wider text-composer-muted">
+              {label}
+            </div>
+          );
+
+          return (
+            <div
+              ref={modelMenuListRef}
+              role="menu"
+              data-testid="model-menu"
+              onKeyDown={handleModelMenuKeyDown}
+              className="composer-model-menu absolute right-0 bottom-full z-50 mb-1 min-w-[180px] max-w-[min(280px,calc(100vw-2rem))] rounded-sm border border-composer-border bg-composer-surface/95 backdrop-blur-sm shadow-md py-1"
+            >
+              {isEffortSelectorEnabled && sectionHeader('Model')}
+              {availableModels.map((model, i) =>
+                renderRow(model, 'model', i, model.id === (effectiveModel?.id ?? null)),
+              )}
+              {isEffortSelectorEnabled && (
+                <>
+                  {sectionHeader('Reasoning')}
+                  {availableEfforts.map((eff, i) =>
+                    renderRow(
+                      eff,
+                      'effort',
+                      availableModels.length + i,
+                      eff.id === (effectiveEffort?.id ?? null),
+                    ),
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Menu slot */}
         {showMenu && isMenuOpen && props.renderMenu?.({ onClose: () => setIsMenuOpen(false) })}
