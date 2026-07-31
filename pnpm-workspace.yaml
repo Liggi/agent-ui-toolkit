@@ -1,2 +1,6 @@
 allowBuilds:
+  # Native file watcher, pulled in by @tailwindcss/cli and used only by
+  # `tailwindcss --watch`. The CSS build runs one-shot, so the native binary is
+  # never needed — skipping its build script keeps installs clean and offline-safe.
+  '@parcel/watcher': false
   esbuild: true

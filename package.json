@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tailwindcss -i ./src/styles/toolkit.dist.css -o ./dist/styles/toolkit.css --minify",
+    "build:css": "tailwindcss -i ./src/styles/toolkit.dist.css -o ./dist/styles/toolkit.css --minify",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -46,6 +47,7 @@
     "@playwright/test": "^1.59.1",
     "@storybook/react": "^10.3.5",
     "@storybook/react-vite": "^10.3.5",
+    "@tailwindcss/cli": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
     "@types/diff": "^7.0.0",
