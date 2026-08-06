@@ -84,6 +84,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const placeholder = props.core?.placeholder ?? 'Type a message...';
   const disabled = props.core?.disabled ?? false;
   const sessionId = props.core?.sessionId;
+  const allowEmptySubmit = props.core?.allowEmptySubmit ?? false;
 
   const enableAttachments = props.features?.enableAttachments ?? true;
   const enableFileAutocomplete = props.features?.enableFileAutocomplete ?? false;
@@ -586,7 +587,7 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
   const handleSubmit = () => {
     const currentValue = textareaRef.current?.value ?? value;
     const trimmedValue = currentValue.trim();
-    if (!trimmedValue && !hasAttachments) return;
+    if (!trimmedValue && !hasAttachments && !allowEmptySubmit) return;
     if (isProcessingAttachments) return;
 
     const attachmentBlocks = hasAttachments ? getContentBlocks() : undefined;
@@ -1105,14 +1106,18 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     data-testid="send-button"
                     disabled={disabled || isProcessingAttachments}
                     aria-disabled={
-                      (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
+                      (!value.trim() && !hasAttachments && !allowEmptySubmit) ||
+                      disabled ||
+                      isProcessingAttachments
                     }
                     onClick={handleSubmit}
                     aria-label="Send message"
                     className={cn(
                       TOUCH_TARGET_44,
                       'flex h-8 w-8 items-center justify-center rounded-sm border transition-all duration-100',
-                      (!value.trim() && !hasAttachments) || disabled || isProcessingAttachments
+                      (!value.trim() && !hasAttachments && !allowEmptySubmit) ||
+                      disabled ||
+                      isProcessingAttachments
                         ? 'border-composer-border text-composer-text-faint cursor-not-allowed'
                         : 'border-composer-active dark:border-composer-active/50 text-composer-active hover:border-composer-active hover:bg-composer-active/20 dark:hover:bg-composer-active/10 cursor-pointer',
                     )}

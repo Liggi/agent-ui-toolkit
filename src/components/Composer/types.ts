@@ -29,6 +29,12 @@ export interface ComposerCoreConfig {
   isLoading?: boolean;
   disabled?: boolean;
   sessionId?: string;
+  /**
+   * Permit submitting with no typed text and no attachments. For hosts whose
+   * outgoing message carries out-of-band content (e.g. pending annotations) —
+   * the host receives an empty string and supplies the content itself.
+   */
+  allowEmptySubmit?: boolean;
 }
 
 export interface ComposerFeatureConfig {
