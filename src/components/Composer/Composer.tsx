@@ -1104,7 +1104,14 @@ export const Composer = forwardRef<ComposerRef, ComposerProps>(function Composer
                     key="send"
                     type="button"
                     data-testid="send-button"
-                    disabled={disabled || isProcessingAttachments}
+                    // Emptiness belongs on the native attribute, not just
+                    // aria-disabled: hosts style the idle state off :disabled,
+                    // and an aria-only button stays focusable and clickable.
+                    disabled={
+                      (!value.trim() && !hasAttachments && !allowEmptySubmit) ||
+                      disabled ||
+                      isProcessingAttachments
+                    }
                     aria-disabled={
                       (!value.trim() && !hasAttachments && !allowEmptySubmit) ||
                       disabled ||
